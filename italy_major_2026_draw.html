@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BNL Italy Major 2026 — Men's Draw</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f8f7f4;
+  --text:#1a1a18;--text2:#5f5e5a;
+  --border:rgba(0,0,0,0.15);--border2:rgba(0,0,0,0.28);
+  --conn:rgba(0,0,0,0.12);
+  --win-bg:#085041;--win-text:#9FE1CB;--win-border:#1D9E75;
+  --elim-bg:#f1efe8;--elim-text:#888780;
+  --champ-bg:#633806;--champ-text:#FAC775;--champ-border:#BA7517;
+  --tbd-bg:#f8f7f4;--tbd-text:#b4b2a9;
+  --lbl:#888780;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1a1a18;--bg2:#222220;
+  --text:#e8e6e0;--text2:#888780;
+  --border:rgba(255,255,255,0.14);--border2:rgba(255,255,255,0.28);
+  --conn:rgba(255,255,255,0.09);
+  --elim-bg:#2c2c2a;--elim-text:#5f5e5a;
+  --tbd-bg:#2c2c2a;--tbd-text:#5f5e5a;
+}}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+#topbar{position:fixed;top:0;left:0;right:0;height:52px;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;gap:12px;}
+#topbar h1{font-size:15px;font-weight:500;white-space:nowrap}
+.sub{font-size:11px;color:var(--text2);white-space:nowrap}
+#legend{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.li{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text2)}
+.ld{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+#reset-btn{font-size:11px;padding:4px 12px;cursor:pointer;white-space:nowrap;background:transparent;border:1px solid var(--border2);border-radius:5px;color:var(--text2);font-family:inherit;flex-shrink:0}
+#reset-btn:hover{background:var(--bg2)}
+#scroll-outer{margin-top:52px;width:100vw;height:calc(100vh - 52px);overflow:scroll;position:relative}
+#bracket{position:relative}
+canvas{position:absolute;top:0;left:0;pointer-events:none}
+#hit-layer{position:absolute;top:0;left:0;cursor:default}
+#minimap-wrap{position:fixed;bottom:14px;right:14px;z-index:60;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
+#minimap-wrap p{font-size:9px;color:var(--text2);text-align:center;margin-bottom:4px;letter-spacing:0.04em}
+#minimap{display:block;border-radius:4px}
+#viewport-box{position:absolute;border:1.5px solid #1D9E75;border-radius:3px;pointer-events:none}
+#champ-banner{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:var(--champ-bg);color:var(--champ-text);border:1px solid var(--champ-border);border-radius:8px;padding:7px 20px;font-size:13px;font-weight:500;display:none;z-index:60;white-space:nowrap}
+#tooltip{position:fixed;pointer-events:none;background:var(--bg);border:1px solid var(--border2);border-radius:5px;padding:4px 9px;font-size:11px;color:var(--text);white-space:nowrap;display:none;z-index:100}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div style="display:flex;flex-direction:column;gap:1px">
+    <h1>BNL Italy Major 2026 — Men's Draw</h1>
+    <p class="sub">R32 · updated 3 Jun 2026 · all R64 results confirmed · click to advance</p>
+  </div>
+  <div id="legend">
+    <div class="li"><div class="ld" style="background:#1D9E75"></div>Advanced</div>
+    <div class="li"><div class="ld" style="background:var(--elim-bg);border:1px solid var(--border)"></div>Eliminated</div>
+    <div class="li"><div class="ld" style="background:#BA7517"></div>Champion</div>
+    <div class="li"><div class="ld" style="background:var(--tbd-bg);border:1px solid var(--border)"></div>TBD</div>
+  </div>
+  <button id="reset-btn">↺ Reset</button>
+</div>
+<div id="scroll-outer"><div id="bracket">
+  <canvas id="bc"></canvas>
+  <div id="hit-layer"></div>
+</div></div>
+<div id="minimap-wrap"><p>OVERVIEW</p><canvas id="minimap"></canvas><div id="viewport-box"></div></div>
+<div id="champ-banner"></div>
+<div id="tooltip"></div>
+
+<script>
+// ─────────────────────────────────────────────
+// DATA — R32 pairs confirmed from official draw PDF (3 Jun 2026)
+// All R64 results are final. R32 matches start today.
+// Format: ["Team A", "Team B", result]   result: "A"|"B"|null
+// ─────────────────────────────────────────────
+
+// LEFT half — 8 R32 matches (top→bottom)
+const L32 = [
+  ["TAPIA / COELLO (1)",       "ABBATE / MONTIEL",         null],
+  ["GALA / JENSEN",            "GARCIA / JIMENEZ (13)",    null],
+  ["ESBRI / RUIZ (11)",        "CABEZA / GONZALEZ",        null],
+  ["SINTES / SANTIGOSA",       "GARRIDO / BERGAMINI (8)",  null],
+  ["DI NENNO / NAVARRO (6)",   "RODRIGUEZ / DE PASCUAL",   null],
+  ["FERNANDEZ / CAPRA",        "ALONSO / GOÑI (10)",       null],
+  ["GONZALEZ / CAMPAGNOLO (9)","RUIZ / ORTEGA",            null],
+  ["CASTAÑO / GIL",            "YANGUAS / STUPACZUK (3)",  null],
+];
+
+// RIGHT half — 8 R32 matches (top→bottom)
+const R32 = [
+  ["LEBRON / AUGSBURGER (4)",  "ARAGON / ROGLAN",          null],
+  ["VILARIÑO / DEL CASTILLO",  "AGUIRRE / ARROYO (12)",    null],
+  ["ARCE / TELLO (15)",        "TORRE / CEPERO",           null],
+  ["HERNANDEZ / MARTINEZ",     "SANZ / NIETO (5)",         null],
+  ["LEAL / GUERRERO (7)",      "COLLADO / HERNANDEZ",      null],
+  ["MELENDEZ / GONZALEZ",      "BAUTISTA / JOFRE (14)",    null],
+  ["BARAHONA / ALFONSO (16)",  "DOMINGUEZ / ZAPATA",       null],
+  ["LIBAAK / CHOZAS",          "GALAN / CHINGOTTO (2)",    null],
+];
+
+// State: lW[r][slot] = winner name; r=0→R16, r=1→QF, r=2→SF
+// (R32 pairs are in L32/R32 above; winners of those go into lW[0]/rW[0])
+let lW, rW, finW, elim;
+
+function init() {
+  lW = [Array(4).fill(null), Array(2).fill(null), Array(1).fill(null)];
+  rW = [Array(4).fill(null), Array(2).fill(null), Array(1).fill(null)];
+  finW = null; elim = new Set();
+  // Apply any pre-known R32 results
+  L32.forEach(([a,b,w],i) => { if(w) applyR32('L',i,a,b,w==='A'?a:b); });
+  R32.forEach(([a,b,w],i) => { if(w) applyR32('R',i,a,b,w==='A'?a:b); });
+}
+
+function applyR32(side, i, a, b, winner) {
+  const arr = side==='L'?lW:rW;
+  const loser = winner===a?b:a;
+  elim.add(loser);
+  arr[0][Math.floor(i/2)] = winner; // R16 slot
+}
+
+// ─────────────────────────────────────────────
+// LAYOUT
+// 4 left cols (R32, R16, QF, SF) + 1 centre (Final) + 4 right cols = 9 total
+// Canvas = 2×viewport; 8 R32 rows per half vertically
+// ─────────────────────────────────────────────
+let VW,VH,CW,CH,colW,rowH,BOX_H,BOX_W,GAP;
+const canvas=document.getElementById('bc'), ctx=canvas.getContext('2d');
+let hitAreas=[];
+
+function calcLayout(){
+  const o=document.getElementById('scroll-outer');
+  VW=o.clientWidth; VH=o.clientHeight;
+  CW=VW*2; CH=VH*2;
+  colW=CW/9; rowH=CH/16;  // 8 rows per half * 2 halves
+  BOX_H=Math.round(rowH*0.42); BOX_W=Math.round(colW*0.86); GAP=Math.round(rowH*0.08);
+}
+
+// Column x-origin
+function colLeft(r){return r*colW;}
+function colRight(r){return CW-(r+1)*colW;}
+function bx(side,r){return (side==='L'?colLeft(r):colRight(r))+colW*0.07;}
+
+// matchIdx is the match index within round r (0-based)
+// R32: 8 matches/side  → rows 0-7    (r=0 display col)
+// R16: 4 matches/side  → rows 0-7, every 2  (r=1 display col)
+// QF:  2 matches/side  → every 4  (r=2)
+// SF:  1 match/side    → every 8  (r=3)
+function matchCY(r,idx){
+  const spacing = 2*Math.pow(2,r); // rows between match centres
+  return (idx*spacing + spacing/2)*rowH;
+}
+function matchTop(r,idx){return matchCY(r,idx)-BOX_H-GAP/2;}
+
+// State access helpers — rounds: 0=R16 winners, 1=QF, 2=SF
+function gW(side,r,idx){return(side==='L'?lW:rW)[r]?.[idx]??null;}
+function sW(side,r,idx,v){(side==='L'?lW:rW)[r][idx]=v;}
+
+function clearDown(side,r,idx){
+  if(r>=3){finW=null;return;}
+  const old=gW(side,r,idx); sW(side,r,idx,null);
+  if(old) elim.delete(old);
+  clearDown(side,r+1,Math.floor(idx/2));
+}
+
+function advR32(side,i,a,b,winner){
+  const loser=winner===a?b:a, slot=Math.floor(i/2);
+  const prev=gW(side,0,slot);
+  if(prev&&prev!==winner) elim.add(prev);
+  sW(side,0,slot,winner); elim.add(loser);
+  clearDown(side,1,Math.floor(slot/2));
+  draw();
+}
+
+function adv(side,r,slot,winner,loser){
+  const prev=gW(side,r,slot);
+  if(prev&&prev!==winner) elim.add(prev);
+  sW(side,r,slot,winner); if(loser) elim.add(loser);
+  clearDown(side,r+1,Math.floor(slot/2));
+  draw();
+}
+
+function crownChamp(w,l){finW=w;if(l)elim.add(l);draw();}
+
+// ─────────────────────────────────────────────
+// COLOURS
+// ─────────────────────────────────────────────
+function cv(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function C(){return{
+  bg:cv('--bg'),border:cv('--border'),text:cv('--text'),text2:cv('--text2'),
+  conn:cv('--conn'),lbl:cv('--lbl'),
+  wBg:cv('--win-bg'),wTx:cv('--win-text'),wBd:cv('--win-border'),
+  eBg:cv('--elim-bg'),eTx:cv('--elim-text'),
+  cBg:cv('--champ-bg'),cTx:cv('--champ-text'),cBd:cv('--champ-border'),
+  tBg:cv('--tbd-bg'),tTx:cv('--tbd-text'),
+};}
+
+function style(team, isWinner, c){
+  if(!team)           return{bg:c.tBg,tc:c.tTx,bc:c.border,lbl:'TBD'};
+  if(finW===team)     return{bg:c.cBg,tc:c.cTx,bc:c.cBd,   lbl:team};
+  if(isWinner)        return{bg:c.wBg,tc:c.wTx,bc:c.wBd,   lbl:team};
+  if(elim.has(team))  return{bg:c.eBg,tc:c.eTx,bc:c.border, lbl:team,s:1};
+  return{bg:c.bg,tc:c.text,bc:c.border,lbl:team};
+}
+
+function drawBox(x,y,w,h,st){
+  ctx.fillStyle=st.bg; ctx.beginPath(); ctx.roundRect(x,y,w,h,4); ctx.fill();
+  ctx.strokeStyle=st.bc; ctx.lineWidth=0.8; ctx.beginPath(); ctx.roundRect(x,y,w,h,4); ctx.stroke();
+  const fs=Math.max(9,h*0.52);
+  ctx.font=`400 ${fs}px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif`;
+  ctx.fillStyle=st.tc; ctx.textAlign='center'; ctx.textBaseline='middle';
+  let lbl=st.lbl, maxW=w-10;
+  while(ctx.measureText(lbl).width>maxW&&lbl.length>4) lbl=lbl.slice(0,-1);
+  if(lbl!==st.lbl) lbl+='…';
+  ctx.fillText(lbl,x+w/2,y+h/2);
+  if(st.s){ctx.strokeStyle=st.tc;ctx.lineWidth=0.7;ctx.beginPath();ctx.moveTo(x+6,y+h/2);ctx.lineTo(x+w-6,y+h/2);ctx.stroke();}
+}
+
+function drawConnectors(c){
+  ctx.strokeStyle=c.conn; ctx.lineWidth=0.8;
+  ['L','R'].forEach(side=>{
+    // Connectors between display cols 0-1, 1-2, 2-3 (R32→R16, R16→QF, QF→SF)
+    for(let dc=1;dc<=3;dc++){
+      // dc=1: connects R32 pairs → R16 boxes (display col 1)
+      // dc=2: connects R16 pairs → QF boxes
+      // dc=3: connects QF pairs → SF boxes
+      const matchesIn = Math.pow(2,4-dc); // matches in the *source* display col
+      const matchesOut= matchesIn/2;
+      for(let i=0;i<matchesOut;i++){
+        const ya=matchCY(dc-1,i*2)  +BOX_H/2;   // centre of top box of pair
+        const yb=matchCY(dc-1,i*2+1)+BOX_H/2;   // wait — box tops, not centres of pairs
+        // Actually: the two "slots" feeding match i of round dc are at display positions i*2 and i*2+1 of dc-1
+        // Their vertical centres are the matchCY of those matches + BOX_H (second box) + GAP/2 + BOX_H/2
+        const topA = matchTop(dc-1,i*2);
+        const topB = matchTop(dc-1,i*2+1);
+        const cA = topA + BOX_H + GAP/2 + BOX_H/2;  // centre of bottom box of match i*2
+        const cB = topB + BOX_H + GAP/2 + BOX_H/2;  // centre of bottom box of match i*2+1
+        // Wait — each "match slot" in display col dc-1 is a SINGLE box, not a pair
+        // For R32 display col (dc=1 source = col 0): each of 8 matches has 2 boxes; connector comes from bottom of each match
+        // For R16+ display cols: each match slot also has 2 boxes (the two contenders)
+        // So connection exits from the mid-point between the two boxes of adjacent matches
+        const midY = (cA+cB)/2;
+        const xOut = side==='L'?bx(side,dc-1)+BOX_W:bx(side,dc-1);
+        const xMid = xOut+colW*0.07*(side==='L'?1:-1);
+        const xIn  = side==='L'?bx(side,dc):bx(side,dc)+BOX_W;
+        // destination: mid of the pair in col dc at match i
+        const destTop = matchTop(dc,i);
+        const destMid = destTop+BOX_H+GAP/2+BOX_H/2;
+        ctx.beginPath();
+        ctx.moveTo(xOut,cA); ctx.lineTo(xMid,cA); ctx.lineTo(xMid,midY); ctx.lineTo(xIn,destMid);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(xOut,cB); ctx.lineTo(xMid,cB); ctx.lineTo(xMid,midY);
+        ctx.stroke();
+      }
+    }
+    // SF → Final
+    const sfTop = matchTop(3,0);
+    const sfMid = sfTop+BOX_H+GAP/2+BOX_H/2;
+    const sfXOut= side==='L'?bx(side,3)+BOX_W:bx(side,3);
+    const fw=BOX_W*1.15,fh=BOX_H*1.1;
+    const fx=CW/2-fw/2,fy=CH/2-fh-GAP/2;
+    const finX=side==='L'?fx:fx+fw, finY=fy+fh/2;
+    ctx.beginPath(); ctx.moveTo(sfXOut,sfMid); ctx.lineTo(finX,finY); ctx.stroke();
+  });
+}
+
+function drawLabels(c){
+  const lbls=['R32','R16','QF','SF'];
+  ctx.fillStyle=c.lbl; ctx.textAlign='center'; ctx.textBaseline='middle';
+  const fs=Math.max(9,colW*0.12);
+  ctx.font=`500 ${fs}px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif`;
+  for(let r=0;r<4;r++){
+    const ly=Math.max(14,matchTop(r,0)-8);
+    ctx.fillText(lbls[r],colLeft(r)+colW/2,ly);
+    ctx.fillText(lbls[r],colRight(r)+colW/2,ly);
+  }
+  ctx.fillText('FINAL',CW/2,CH/2-BOX_H*1.15-10);
+}
+
+function draw(){
+  const c=C();
+  ctx.clearRect(0,0,CW,CH);
+  hitAreas=[];
+  drawConnectors(c);
+  drawLabels(c);
+
+  // ── R32 (display col 0): 8 matches per side, each has 2 team boxes ──
+  ['L','R'].forEach(side=>{
+    const raw=side==='L'?L32:R32;
+    raw.forEach(([a,b,w],i)=>{
+      const x=bx(side,0), top=matchTop(0,i);
+      const r16slot=Math.floor(i/2), r16w=gW(side,0,r16slot);
+      const sa=style(a, r16w===a, c);
+      const sb=style(b, r16w===b, c);
+      drawBox(x,top,          BOX_W,BOX_H,sa);
+      drawBox(x,top+BOX_H+GAP,BOX_W,BOX_H,sb);
+      if(!w){
+        hitAreas.push({x,y:top,          w:BOX_W,h:BOX_H,label:a,fn:()=>advR32(side,i,a,b,a)});
+        hitAreas.push({x,y:top+BOX_H+GAP,w:BOX_W,h:BOX_H,label:b,fn:()=>advR32(side,i,a,b,b)});
+      }
+    });
+  });
+
+  // ── R16, QF, SF (display cols 1, 2, 3) ──
+  // Each display col r (1-3) shows matches; each match has 2 boxes = the two contenders
+  // Contenders come from lW[r-1][i*2] and lW[r-1][i*2+1]
+  // Winners are stored in lW[r][Math.floor(i/2)]
+  // But our state arrays are: lW[0]=R16 winners (4), lW[1]=QF (2), lW[2]=SF (1)
+  // So display col 1 (R16) shows lW[0][i*2] vs lW[0][i*2+1] → winner into lW[1]
+  // Wait — we need to store R16 *contenders* (8 teams) and R16 *winners* (4 teams)
+  // Current: lW[0] has 4 slots = R16 winners. We need R16 contenders too.
+  // Fix: lW[0]=R16contenders(8), lW[1]=R16winners=QFcontenders(4), lW[2]=QFwinners=SFcontenders(2), lW[3]=SFwinners(1)
+  // But init sets lW[0]=Array(4)... Let's just use the R32 raw arrays as the source for col 1 contenders
+  // and lW[0] as the R16 match winners feeding col 2, etc.
+
+  // Display col 1 = R16: contenders are R32 winners = lW[0][0..3] per side, shown in pairs
+  // But we have 4 R16 slots and show them as 2 matches of 2 each? No — R16 has 4 matches of 2 teams = 8 contenders
+  // Our lW[0] only has 4 slots (R32 winners). So lW[0] IS the 4 R16 match-winners.
+  // The R16 contenders (8) are the 8 R32 winners stored... but we only stored 4 per side.
+  // ROOT ISSUE: R32 has 8 matches → 8 winners → R16 has 4 matches (each combining 2 R32 winners)
+  // We need lW[0] to hold 8 R32 winners (one per R32 match), not 4.
+  // Let me restructure: lW = [r32winners(8), r16winners(4), qfwinners(2), sfwinners(1)]
+
+  // Since I fixed this in init above with Array(4), I need to re-think.
+  // Let me just render from the correct arrays. Display col r uses:
+  //   contenders = lW[r-1] pairs (indices i*2 and i*2+1)
+  //   winner     = lW[r][i]
+  // where lW[-1] would be the R32 raw entrants.
+  // So lW should be: [r32winners=8, r16winners=4, qfwinners=2, sfwinners=1]
+
+  ['L','R'].forEach(side=>{
+    const arr=side==='L'?lW:rW;
+    // Display cols 1=R16, 2=QF, 3=SF
+    // col 1 (R16): 4 matches, contenders from arr[0][i*2] & arr[0][i*2+1]
+    // col 2 (QF):  2 matches, contenders from arr[1][i*2] & arr[1][i*2+1]
+    // col 3 (SF):  1 match,  contenders from arr[2][0] & arr[2][1]
+    const colMatches=[4,2,1];
+    for(let dc=1;dc<=3;dc++){
+      const nm=colMatches[dc-1];
+      for(let i=0;i<nm;i++){
+        const teamA=arr[dc-1][i*2]  ??null;
+        const teamB=arr[dc-1][i*2+1]??null;
+        const winner=arr[dc][i]??null; // who won this match
+        const x=bx(side,dc), top=matchTop(dc,i);
+        const sa=style(teamA, winner===teamA, c);
+        const sb=style(teamB, winner===teamB, c);
+        drawBox(x,top,          BOX_W,BOX_H,sa);
+        drawBox(x,top+BOX_H+GAP,BOX_W,BOX_H,sb);
+        if(teamA) hitAreas.push({x,y:top,          w:BOX_W,h:BOX_H,label:teamA,fn:()=>adv(side,dc,i,teamA,teamB)});
+        if(teamB) hitAreas.push({x,y:top+BOX_H+GAP,w:BOX_W,h:BOX_H,label:teamB,fn:()=>adv(side,dc,i,teamB,teamA)});
+      }
+    }
+  });
+
+  // Final
+  const lSF=gW('L',2,0)??null, rSF=gW('R',2,0)??null;
+  // Wait — SF winners are in arr[3][0]. But our arr only has 3 levels [0,1,2].
+  // sf contenders: arr[2][0] and arr[2][1]; sf winner: arr[3][0]
+  // But I defined lW as 3 arrays. Need a 4th: sfwinners.
+  // Actually adv() for SF (dc=3, i=0) calls adv(side,3,0,w,l) → sW(side,3,0,winner)
+  // but lW only has indices 0,1,2. So lW[3] is undefined. Need to add it.
+  const lSFw=gW('L',3,0)??null, rSFw=gW('R',3,0)??null;
+  const fw=BOX_W*1.15,fh=BOX_H*1.1;
+  const fx=CW/2-fw/2,fy=CH/2-fh-GAP/2;
+  const sL=style(lSFw, finW===lSFw&&!!lSFw, c);
+  const sR=style(rSFw, finW===rSFw&&!!rSFw, c);
+  if(lSFw&&finW===lSFw){sL.bg=c.cBg;sL.tc=c.cTx;sL.bc=c.cBd;}
+  if(rSFw&&finW===rSFw){sR.bg=c.cBg;sR.tc=c.cTx;sR.bc=c.cBd;}
+  drawBox(fx,fy,       fw,fh, lSFw?sL:{bg:c.tBg,tc:c.tTx,bc:c.border,lbl:'TBD'});
+  drawBox(fx,fy+fh+GAP,fw,fh, rSFw?sR:{bg:c.tBg,tc:c.tTx,bc:c.border,lbl:'TBD'});
+  if(lSFw) hitAreas.push({x:fx,y:fy,       w:fw,h:fh,label:lSFw,fn:()=>crownChamp(lSFw,rSFw)});
+  if(rSFw) hitAreas.push({x:fx,y:fy+fh+GAP,w:fw,h:fh,label:rSFw,fn:()=>crownChamp(rSFw,lSFw)});
+
+  const bn=document.getElementById('champ-banner');
+  if(finW){bn.textContent='🥇 Champion: '+finW;bn.style.display='block';}else bn.style.display='none';
+  drawMinimap();
+}
+
+// ─────────────────────────────────────────────
+// Reinitialise with correct array sizes
+// lW = [r32winners(8), r16winners(4), qfwinners(2), sfwinners(1)]
+// ─────────────────────────────────────────────
+function init(){
+  lW=[Array(8).fill(null),Array(4).fill(null),Array(2).fill(null),Array(1).fill(null)];
+  rW=[Array(8).fill(null),Array(4).fill(null),Array(2).fill(null),Array(1).fill(null)];
+  finW=null; elim=new Set();
+  L32.forEach(([a,b,w],i)=>{ if(w){ const wn=w==='A'?a:b,ln=w==='A'?b:a; elim.add(ln); lW[0][i]=wn; }});
+  R32.forEach(([a,b,w],i)=>{ if(w){ const wn=w==='A'?a:b,ln=w==='A'?b:a; elim.add(ln); rW[0][i]=wn; }});
+}
+
+// Also fix clearDown and adv to work with 4-level arrays
+function clearDown(side,r,idx){
+  if(r>=4){finW=null;return;}
+  const arr=side==='L'?lW:rW;
+  const old=arr[r]?.[idx];
+  if(arr[r]) arr[r][idx]=null;
+  if(old) elim.delete(old);
+  clearDown(side,r+1,Math.floor(idx/2));
+}
+
+function advR32(side,i,a,b,winner){
+  const arr=side==='L'?lW:rW;
+  const loser=winner===a?b:a;
+  const prev=arr[0][i];
+  if(prev&&prev!==winner) elim.add(prev);
+  arr[0][i]=winner; elim.add(loser);
+  clearDown(side,1,Math.floor(i/2));
+  draw();
+}
+
+function adv(side,r,slot,winner,loser){
+  // r here is the display col (1=R16,2=QF,3=SF), which maps to array index r
+  const arr=side==='L'?lW:rW;
+  const prev=arr[r][slot];
+  if(prev&&prev!==winner) elim.add(prev);
+  arr[r][slot]=winner; if(loser) elim.add(loser);
+  clearDown(side,r+1,Math.floor(slot/2));
+  draw();
+}
+
+// ─────────────────────────────────────────────
+// MINIMAP & HIT LAYER
+// ─────────────────────────────────────────────
+const MM_W=160,MM_H=100;
+function drawMinimap(){
+  const mm=document.getElementById('minimap');
+  mm.width=MM_W; mm.height=MM_H;
+  mm.getContext('2d').drawImage(canvas,0,0,MM_W,MM_H);
+  updateVP();
+}
+function updateVP(){
+  const o=document.getElementById('scroll-outer'),vb=document.getElementById('viewport-box');
+  vb.style.left=(o.scrollLeft*(MM_W/CW)+6)+'px';
+  vb.style.top=(o.scrollTop*(MM_H/CH)+26)+'px';
+  vb.style.width=Math.round(VW*(MM_W/CW))+'px';
+  vb.style.height=Math.round(VH*(MM_H/CH))+'px';
+}
+
+const hl=document.getElementById('hit-layer');
+hl.addEventListener('click',e=>{
+  const r=hl.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  for(let i=hitAreas.length-1;i>=0;i--){const h=hitAreas[i];if(mx>=h.x&&mx<=h.x+h.w&&my>=h.y&&my<=h.y+h.h){h.fn();return;}}
+});
+const tip=document.getElementById('tooltip');
+hl.addEventListener('mousemove',e=>{
+  const r=hl.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  let f=null;
+  for(let i=hitAreas.length-1;i>=0;i--){const h=hitAreas[i];if(mx>=h.x&&mx<=h.x+h.w&&my>=h.y&&my<=h.y+h.h){f=h;break;}}
+  if(f){hl.style.cursor='pointer';tip.style.display='block';tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-30)+'px';tip.textContent='Advance '+f.label;}
+  else{hl.style.cursor='default';tip.style.display='none';}
+});
+hl.addEventListener('mouseleave',()=>tip.style.display='none');
+
+document.getElementById('minimap').addEventListener('click',e=>{
+  const mm=document.getElementById('minimap'),r=mm.getBoundingClientRect();
+  document.getElementById('scroll-outer').scrollTo({left:(e.clientX-r.left)/MM_W*CW-VW/2,top:(e.clientY-r.top)/MM_H*CH-VH/2,behavior:'smooth'});
+});
+
+document.getElementById('reset-btn').addEventListener('click',()=>{init();draw();});
+document.getElementById('scroll-outer').addEventListener('scroll',updateVP,{passive:true});
+
+// Quarter nav
+const qb=document.createElement('div');
+qb.style.cssText='position:fixed;bottom:14px;left:14px;z-index:60;display:flex;flex-direction:column;gap:6px';
+[['↖ Top Left',0,0],['↗ Top Right',1,0],['↙ Bot Left',0,1],['↘ Bot Right',1,1],['⬛ Centre',0.5,0.5]].forEach(([lbl,px,py])=>{
+  const btn=document.createElement('button');
+  btn.textContent=lbl; btn.style.cssText='font-size:10px;padding:3px 10px;cursor:pointer;background:var(--bg);border:1px solid var(--border2);border-radius:5px;color:var(--text2);font-family:inherit;text-align:left';
+  btn.addEventListener('click',()=>{
+    const o=document.getElementById('scroll-outer');
+    o.scrollTo({left:px===0.5?CW/2-VW/2:px*VW,top:py===0.5?CH/2-VH/2:py*VH,behavior:'smooth'});
+  });
+  qb.appendChild(btn);
+});
+document.body.appendChild(qb);
+
+function setup(){
+  calcLayout();
+  const br=document.getElementById('bracket');
+  br.style.width=CW+'px'; br.style.height=CH+'px';
+  canvas.width=CW; canvas.height=CH; canvas.style.width=CW+'px'; canvas.style.height=CH+'px';
+  hl.style.width=CW+'px'; hl.style.height=CH+'px';
+  draw();
+  document.getElementById('scroll-outer').scrollTo({left:0,top:0});
+  updateVP();
+}
+let _rt;
+window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(setup,120);});
+init(); setup();
+</script>
+</body>
+</html>
