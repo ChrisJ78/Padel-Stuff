@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premier Padel 2026 — Race for No.1</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gc: #5B52CC;
+  --ct: #0D7A5F;
+  --la: #D44F25;
+  --sy: #7A7870;
+  --bg: #0E0E0C;
+  --bg2: #171714;
+  --bg3: #1F1F1B;
+  --border: #2C2C28;
+  --border2: #3A3A34;
+  --text: #F0EEE6;
+  --text2: #A8A69E;
+  --text3: #6A6860;
+  --accent: #F5C842;
+  --elim-bg: #2A1515;
+  --elim-text: #E05555;
+  --win-bg: #0F2A1E;
+  --win-text: #4ACA8A;
+  --radius: 6px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* HEADER */
+.header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 28px 16px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.header-left h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--text);
+}
+.header-left h1 span { color: var(--accent); }
+.header-left p {
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 4px;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.03em;
+}
+.header-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn:hover { background: var(--border2); color: var(--text); }
+.btn.accent { background: var(--accent); color: #0E0E0C; border-color: var(--accent); }
+.btn.accent:hover { opacity: 0.9; }
+
+/* LAYOUT */
+.main { display: grid; grid-template-columns: 1fr 340px; gap: 0; min-height: calc(100vh - 73px); }
+.left { padding: 20px 24px; border-right: 1px solid var(--border); overflow-y: auto; }
+.right { padding: 20px 20px; overflow-y: auto; background: var(--bg2); }
+
+/* STANDINGS CARDS */
+.standings { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 20px; }
+.scard {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  text-align: center;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.scard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.scard.gc::before { background: var(--gc); }
+.scard.ct::before { background: var(--ct); }
+.scard.la::before { background: var(--la); }
+.scard.sy::before { background: var(--sy); }
+.scard.elim { opacity: 0.45; }
+.scard.elim::before { background: #444; }
+.scard .rank {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  margin-bottom: 3px;
+  letter-spacing: 0.05em;
+}
+.scard .cname {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+.scard .pts {
+  font-family: 'DM Mono', monospace;
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+.scard .base {
+  font-size: 10px;
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+}
+.scard .gained { font-size: 10px; margin-top: 3px; font-family: 'DM Mono', monospace; }
+.status-badge {
+  display: inline-block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 3px;
+  margin-top: 5px;
+}
+.badge-leading { background: var(--win-bg); color: var(--win-text); }
+.badge-contention { background: #1A1F2A; color: #5B8FD4; }
+.badge-elim { background: var(--elim-bg); color: var(--elim-text); }
+
+/* CHART */
+.chart-wrap {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chart-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text2);
+}
+.legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+}
+.legend-line {
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+canvas { display: block; }
+
+/* TABLE */
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.tbl-wrap { overflow-x: auto; margin-bottom: 20px; }
+table { width: 100%; border-collapse: collapse; min-width: 540px; }
+thead th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text3);
+  padding: 6px 6px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  white-space: nowrap;
+}
+thead th:first-child { text-align: left; }
+thead th:nth-child(2) { width: 70px; }
+tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+tbody tr:hover { background: var(--bg3); }
+tbody tr.elim-row td { opacity: 0.45; }
+tbody td { padding: 5px 6px; vertical-align: middle; text-align: center; }
+tbody td:first-child { text-align: left; }
+.t-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.cat-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.cat-Major { background: #1E1A3A; color: #8B82E8; }
+.cat-P1    { background: #0F2A1E; color: #4ACA8A; }
+.cat-P2    { background: #2A1F0A; color: #D4941A; }
+.cat-Finals{ background: #2A1015; color: #E05555; }
+
+select.rsel {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 3px 3px;
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  background: var(--bg2);
+  color: var(--text3);
+  width: 82px;
+  cursor: pointer;
+  transition: all 0.1s;
+  -webkit-appearance: none;
+  appearance: none;
+  text-align: center;
+}
+select.rsel:focus { outline: none; border-color: var(--border2); }
+select.rsel.val-W  { background: #0F2A1E; color: #4ACA8A; border-color: #1A4A30; font-weight: 500; }
+select.rsel.val-F  { background: #1E1A3A; color: #8B82E8; border-color: #2E2A5A; font-weight: 500; }
+select.rsel.val-SF { background: #2A1F0A; color: #D4941A; border-color: #3A2F0A; }
+select.rsel.val-P3 { background: #2A1F0A; color: #D4941A; border-color: #3A2F0A; }
+select.rsel.val-P4 { background: #2A1810; color: #C4722A; border-color: #3A2810; }
+select.rsel.val-QF { background: #2A1015; color: #C45A5A; border-color: #3A1A1A; }
+select.rsel.val-R16, select.rsel.val-R32 { background: #1A1A16; color: var(--text2); border-color: var(--border2); }
+
+/* RIGHT PANEL — LEADERBOARD */
+.lb-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.lb-sub {
+  font-size: 11px;
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 16px;
+}
+.lb-row {
+  margin-bottom: 14px;
+  transition: opacity 0.2s;
+}
+.lb-row.elim { opacity: 0.4; }
+.lb-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+.lb-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lb-pos-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  width: 16px;
+}
+.lb-pts-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+}
+.lb-bar-wrap {
+  background: var(--border);
+  border-radius: 3px;
+  height: 6px;
+  overflow: hidden;
+}
+.lb-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.35s cubic-bezier(.4,0,.2,1);
+}
+.lb-gap {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 3px;
+  text-align: right;
+}
+
+/* ELIM NOTES */
+.elim-note {
+  background: var(--elim-bg);
+  border: 1px solid #3A1515;
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--elim-text);
+  font-family: 'DM Mono', monospace;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.elim-note strong {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 2px;
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* GAP + MAX */
+.gap-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.gap-box .gap-leader { color: var(--text); font-size: 12px; font-weight: 500; }
+.max-pts-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 16px;
+}
+.max-pts-box span {
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 500;
+  display: block;
+  margin-top: 2px;
+}
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+.footnote {
+  font-size: 10px;
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+  line-height: 1.6;
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .main { grid-template-columns: 1fr; }
+  .left { border-right: none; border-bottom: 1px solid var(--border); }
+  .standings { grid-template-columns: repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Premier Padel 2026 — <span>Race for No.1</span></h1>
+    <p>Scenario Builder · 8 completed · 16 remaining · Combined team points</p>
+  </div>
+  <div class="header-right">
+    <button class="btn" onclick="resetAll()">Clear All</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="left">
+    <!-- STANDINGS -->
+    <div class="standings" id="cards"></div>
+
+    <!-- CHART -->
+    <div class="chart-wrap">
+      <div class="chart-header">
+        <span class="chart-title">Cumulative Points — 2026 Race</span>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div style="position:relative;height:260px">
+        <canvas id="raceChart"></canvas>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <p class="section-title">Remaining Tournaments — Enter Scenario Results</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left">Tournament</th>
+            <th>Cat</th>
+            <th style="color:#8B82E8">Galán /<br>Chingotto</th>
+            <th style="color:#4ACA8A">Coello /<br>Tapia</th>
+            <th style="color:#D4741A">Lebrón /<br>Augsburger</th>
+            <th style="color:#7A7870">Stupaczuk /<br>Yanguas</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <p class="footnote">
+      Combined team points (individual points ×2). Solid lines = completed tournaments. Dashed = scenario projection.<br>
+      A team is mathematically eliminated when their maximum possible score cannot reach the current scenario leader.<br>
+      ★ = upgraded category for 2026 season. Qatar Major postponed (excluded).
+    </p>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right">
+    <div class="lb-title">Leaderboard</div>
+    <div class="lb-sub" id="lb-sub">Scenario projection</div>
+
+    <div class="max-pts-box">
+      Max pts still available
+      <span id="maxpts">—</span>
+    </div>
+
+    <div class="gap-box" id="gapbox">—</div>
+
+    <div id="elim-notes"></div>
+
+    <hr class="divider">
+
+    <div id="leaderboard"></div>
+  </div>
+</div>
+
+<script>
+const BASE = {gc:9340, ct:7760, la:4710, sy:3600};
+
+const COMPLETED_LABELS = [
+  'Riyadh P1','Gijón P2','Cancún P2','Miami P1',
+  'NewGiza P2','Brussels P2','Asunción P2','Buenos Aires P1'
+];
+const COMPLETED_CUMUL = {
+  gc:[1200,2400,2580,4580,5780,6140,7340,9340],
+  ct:[2000,2720,3920,5120,5120,5840,6560,7760],
+  la:[720, 900,1620,2340,2430,3630,3990,4710],
+  sy:[360, 720, 900,1620,2340,2700,2880,3600],
+};
+
+const TEAMS = [
+  {key:'gc', label:'Galán / Chingotto',  short:'G/C', color:'#5B52CC'},
+  {key:'ct', label:'Coello / Tapia',     short:'C/T', color:'#0D7A5F'},
+  {key:'la', label:'Lebrón / Augsburger',short:'L/A', color:'#D44F25'},
+  {key:'sy', label:'Stupaczuk / Yanguas',short:'S/Y', color:'#7A7870'},
+];
+
+const PTS = {
+  Major:  {W:2000,F:1200,SF:720, QF:360,R16:180,R32:90},
+  P1:     {W:1000,F:600, SF:360, QF:180,R16:90, R32:45},
+  P2:     {W:600, F:360, SF:180, QF:90, R16:45, R32:22},
+  Finals: {W:1500,F:900, P3:600, P4:400,QF:270},
+};
+const ROUNDS = {
+  Major:  ['W','F','SF','QF','R16','R32'],
+  P1:     ['W','F','SF','QF','R16','R32'],
+  P2:     ['W','F','SF','QF','R16','R32'],
+  Finals: ['W','F','P3','P4','QF'],
+};
+const RLABELS = {
+  W:'Winner',F:'Finalist',SF:'Semi-final',QF:'Quarter-final',
+  R16:'Rd of 16',R32:'Rd of 32',P3:'3rd place',P4:'4th place'
+};
+
+const REMAINING = [
+  {name:'BNL Italy Major',  cat:'Major'},
+  {name:'Valencia P1',      cat:'P1'},
+  {name:'Valladolid P2',    cat:'P2'},
+  {name:'Bordeaux P2',      cat:'P2'},
+  {name:'Málaga P1',        cat:'P1'},
+  {name:'Pretoria P1 ★',   cat:'P1'},
+  {name:'London P1',        cat:'P1'},
+  {name:'Madrid P1',        cat:'P1'},
+  {name:'Paris Major',      cat:'Major'},
+  {name:'Rotterdam P2',     cat:'P2'},
+  {name:'Germany P2',       cat:'P2'},
+  {name:'Milano P1',        cat:'P1'},
+  {name:'Kuwait Major ★',  cat:'Major'},
+  {name:'Dubai P1',         cat:'P1'},
+  {name:'Mexico Major',     cat:'Major'},
+  {name:'Barcelona Finals', cat:'Finals'},
+];
+
+const selections = REMAINING.map(() => ({gc:null,ct:null,la:null,sy:null}));
+
+function getpts(cat, round) {
+  if (!round) return 0;
+  return (PTS[cat][round] || 0) * 2;
+}
+function maxForCat(cat) { return getpts(cat,'W'); }
+function projected(key) {
+  return BASE[key] + selections.reduce((s,sel,i) => s + getpts(REMAINING[i].cat, sel[key]), 0);
+}
+function maxPossible(key) {
+  return projected(key) + selections.reduce((s,sel,i) => sel[key] ? s : s + maxForCat(REMAINING[i].cat), 0);
+}
+function totalMaxRemaining() {
+  return REMAINING.reduce((s,t) => s + maxForCat(t.cat), 0);
+}
+
+function buildLegend() {
+  const el = document.getElementById('legend');
+  el.innerHTML = TEAMS.map(t =>
+    `<div class="legend-item">
+      <div class="legend-line" style="background:${t.color}"></div>
+      ${t.short}
+    </div>`
+  ).join('');
+}
+
+function buildTable() {
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  REMAINING.forEach((t, i) => {
+    const rounds = ROUNDS[t.cat];
+    const tr = document.createElement('tr');
+    tr.id = 'tr-'+i;
+    tr.innerHTML = `
+      <td><span class="t-name">${t.name}</span></td>
+      <td><span class="cat-badge cat-${t.cat}">${t.cat}</span></td>
+      ${TEAMS.map(tm => {
+        const val = selections[i][tm.key];
+        return `<td><select class="rsel${val?' val-'+val:''}" data-i="${i}" data-k="${tm.key}" onchange="onSelect(this)">
+          <option value="">—</option>
+          ${rounds.map(r=>`<option value="${r}"${val===r?' selected':''}>${RLABELS[r]}</option>`).join('')}
+        </select></td>`;
+      }).join('')}`;
+    tbody.appendChild(tr);
+  });
+}
+
+function onSelect(el) {
+  const i = +el.dataset.i, k = el.dataset.k, v = el.value || null;
+  selections[i][k] = v;
+  el.className = v ? `rsel val-${v}` : 'rsel';
+  update();
+}
+
+let chart = null;
+
+function update() {
+  const projs = {}, maxPoss = {};
+  TEAMS.forEach(t => { projs[t.key] = projected(t.key); maxPoss[t.key] = maxPossible(t.key); });
+
+  const sorted = [...TEAMS].sort((a,b) => projs[b.key]-projs[a.key]);
+  const leaderKey = sorted[0].key;
+  const leaderProj = projs[leaderKey];
+
+  const eliminated = {};
+  TEAMS.forEach(t => { eliminated[t.key] = t.key !== leaderKey && maxPoss[t.key] < leaderProj; });
+
+  const maxProj = leaderProj;
+
+  // Cards (ordered by standing)
+  document.getElementById('cards').innerHTML = sorted.map((t,i) => {
+    const gained = projs[t.key] - BASE[t.key];
+    const isElim = eliminated[t.key];
+    let badge = '';
+    if (i===0) badge = `<span class="status-badge badge-leading">Leading</span>`;
+    else if (isElim) badge = `<span class="status-badge badge-elim">Eliminated</span>`;
+    else badge = `<span class="status-badge badge-contention">In contention</span>`;
+    return `<div class="scard ${t.key}${isElim?' elim':''}">
+      <div class="rank">${['1ST','2ND','3RD','4TH'][i]}</div>
+      <div class="cname">${t.label.replace(' / ','/<br>')}</div>
+      <div class="pts">${projs[t.key].toLocaleString()}</div>
+      <div class="base">base ${BASE[t.key].toLocaleString()}</div>
+      <div class="gained" style="color:${gained>0&&!isElim?t.color:'#555'}">${gained>0?'+'+gained.toLocaleString():'—'}</div>
+      ${badge}
+    </div>`;
+  }).join('');
+
+  // Max pts
+  document.getElementById('maxpts').textContent = totalMaxRemaining().toLocaleString() + ' pts';
+
+  // Gap box
+  const leader = sorted[0], second = sorted[1];
+  const gap = projs[leader.key] - projs[second.key];
+  document.getElementById('gapbox').innerHTML = gap === 0
+    ? `<span class="gap-leader">${leader.label} and ${second.label} are tied</span>`
+    : `<span class="gap-leader">${leader.label}</span> lead by<br><span style="color:var(--accent);font-size:16px;font-weight:500;">${gap.toLocaleString()} pts</span><br>over ${second.label}`;
+
+  // Elim notes
+  const elimNotes = TEAMS.filter(t => eliminated[t.key]).map(t => {
+    const shortfall = leaderProj - maxPoss[t.key];
+    return `<div class="elim-note"><strong>${t.label}</strong>Eliminated — even winning everything, they fall ${shortfall.toLocaleString()} pts short of the leader.</div>`;
+  });
+  document.getElementById('elim-notes').innerHTML = elimNotes.join('');
+
+  // Leaderboard
+  document.getElementById('leaderboard').innerHTML = sorted.map((t,i) => {
+    const pct = Math.round((projs[t.key]/maxProj)*100);
+    const isElim = eliminated[t.key];
+    const gapStr = i===0 ? '' : `−${(projs[sorted[0].key]-projs[t.key]).toLocaleString()} from 1st`;
+    return `<div class="lb-row${isElim?' elim':''}">
+      <div class="lb-meta">
+        <div class="lb-name" style="color:${isElim?'#555':t.color}">
+          <span class="lb-pos-num">${i+1}</span>
+          ${t.label}
+        </div>
+        <div class="lb-pts-val">${projs[t.key].toLocaleString()}</div>
+      </div>
+      <div class="lb-bar-wrap">
+        <div class="lb-bar" style="width:${pct}%;background:${isElim?'#333':t.color}"></div>
+      </div>
+      <div class="lb-gap">${isElim ? 'mathematically eliminated' : gapStr}</div>
+    </div>`;
+  }).join('');
+
+  // Grey out elim rows in table
+  TEAMS.forEach(t => {
+    if (eliminated[t.key]) {
+      document.querySelectorAll(`select[data-k="${t.key}"]`).forEach(el => el.classList.add('elim-col'));
+    } else {
+      document.querySelectorAll(`select[data-k="${t.key}"]`).forEach(el => el.classList.remove('elim-col'));
+    }
+  });
+
+  updateChart(eliminated);
+}
+
+function updateChart(eliminated) {
+  const filledIndices = REMAINING.reduce((arr,t,i) => {
+    if (TEAMS.some(tm => selections[i][tm.key])) arr.push(i);
+    return arr;
+  }, []);
+
+  const projLabels = filledIndices.map(i => REMAINING[i].name.replace(' ★',''));
+  const allLabels  = [...COMPLETED_LABELS, ...projLabels];
+  const nC = COMPLETED_LABELS.length;
+  const total = nC + projLabels.length;
+
+  const projData = {};
+  TEAMS.forEach(t => {
+    projData[t.key] = [];
+    let running = BASE[t.key];
+    filledIndices.forEach(i => {
+      running += getpts(REMAINING[i].cat, selections[i][t.key]);
+      projData[t.key].push(running);
+    });
+  });
+
+  function makeDatasets(t) {
+    const isElim = eliminated[t.key];
+    const col = isElim ? '#3A3A34' : t.color;
+    const solid = Array(total).fill(null);
+    const dash  = Array(total).fill(null);
+    COMPLETED_CUMUL[t.key].forEach((v,i) => solid[i] = v);
+    if (projData[t.key].length > 0) {
+      dash[nC-1] = BASE[t.key];
+      projData[t.key].forEach((v,j) => dash[nC+j] = v);
+    }
+    return [
+      {
+        label: t.short+' (done)',
+        data: solid,
+        borderColor: col,
+        backgroundColor: col,
+        borderWidth: isElim ? 1.5 : 2.5,
+        borderDash: [],
+        pointRadius: solid.map(v => v!==null ? 3 : 0),
+        pointBackgroundColor: '#0E0E0C',
+        pointBorderColor: col,
+        pointBorderWidth: 1.5,
+        tension: 0.3,
+        spanGaps: false,
+      },
+      {
+        label: t.short+' ⟶',
+        data: dash,
+        borderColor: col,
+        backgroundColor: col,
+        borderWidth: isElim ? 1 : 2,
+        borderDash: [5,4],
+        pointRadius: dash.map((v,i) => v!==null&&i>=nC ? 3 : 0),
+        pointBackgroundColor: '#0E0E0C',
+        pointBorderColor: col,
+        pointBorderWidth: 1.5,
+        tension: 0.3,
+        spanGaps: false,
+      }
+    ];
+  }
+
+  const datasets = TEAMS.flatMap(t => makeDatasets(t));
+
+  if (chart) { chart.destroy(); chart = null; }
+
+  chart = new Chart(document.getElementById('raceChart'), {
+    type: 'line',
+    data: { labels: allLabels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          backgroundColor: '#1F1F1B',
+          borderColor: '#3A3A34',
+          borderWidth: 1,
+          titleColor: '#F0EEE6',
+          bodyColor: '#A8A69E',
+          padding: 10,
+          titleFont: { family: "'Barlow Condensed', sans-serif", size: 12, weight: '700' },
+          bodyFont: { family: "'DM Mono', monospace", size: 11 },
+          filter: item => item.raw !== null,
+          callbacks: {
+            label: ctx => ctx.raw !== null ? ` ${ctx.dataset.label}: ${ctx.raw.toLocaleString()}` : null,
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: '#2C2C28' },
+          ticks: {
+            color: '#6A6860',
+            font: { family: "'DM Mono', monospace", size: 9 },
+            maxRotation: 35,
+            autoSkip: false,
+          }
+        },
+        y: {
+          grid: { color: '#2C2C28' },
+          ticks: {
+            color: '#6A6860',
+            font: { family: "'DM Mono', monospace", size: 9 },
+            callback: v => v.toLocaleString(),
+          },
+          title: {
+            display: true,
+            text: 'cumulative team points',
+            color: '#6A6860',
+            font: { family: "'DM Mono', monospace", size: 9 },
+          }
+        }
+      },
+      interaction: { mode:'index', intersect:false }
+    }
+  });
+}
+
+function resetAll() {
+  selections.forEach(sel => TEAMS.forEach(t => sel[t.key] = null));
+  buildTable();
+  update();
+}
+
+buildLegend();
+buildTable();
+update();
+</script>
+</body>
+</html>
