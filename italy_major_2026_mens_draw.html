@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Italy Major 2026 — Men's Draw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: #0a1a0f;
+    color: #e8f5ec;
+    min-height: 100vh;
+    padding: 24px 20px 40px;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #1e4a2a;
+  }
+  .page-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #f5c842;
+    letter-spacing: 0.04em;
+  }
+  .page-sub {
+    font-size: 13px;
+    color: #7aad8a;
+    margin-top: 3px;
+  }
+  .tournament-info {
+    text-align: right;
+    font-size: 12px;
+    color: #7aad8a;
+    line-height: 1.6;
+  }
+
+  /* ── SEEDS TABLE ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #7aad8a;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .seeds-section { margin-bottom: 28px; }
+
+  .seeds-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+  }
+
+  .seed-card {
+    background: #0f2a18;
+    border: 1px solid #1e4a2a;
+    border-radius: 8px;
+    padding: 9px 7px;
+    text-align: center;
+  }
+  .seed-rank {
+    font-size: 10px;
+    color: #4a8c5c;
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+  .seed-name {
+    font-size: 10.5px;
+    color: #c8e8d4;
+    font-weight: 500;
+    line-height: 1.3;
+    min-height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .seed-pts {
+    font-size: 13px;
+    color: #e8f5ec;
+    font-weight: 600;
+    margin-top: 5px;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .seed-diff {
+    font-size: 10px;
+    margin-top: 4px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .seed-diff.gap {
+    color: #f5c842;
+    background: rgba(245,200,66,0.12);
+  }
+  .seed-diff.top {
+    color: #4db87a;
+    background: rgba(77,184,122,0.12);
+    font-size: 9px;
+  }
+
+  /* ── BRACKET ── */
+  .bracket-section { }
+  .bracket-outer {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  /* Each half is a flex row of round columns */
+  .half {
+    flex: 1;
+    display: flex;
+    min-width: 0;
+  }
+  .half-right {
+    flex-direction: row-reverse;
+  }
+
+  .round-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 145px;
+    max-width: 200px;
+  }
+
+  .round-header {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #4a8c5c;
+    text-align: center;
+    padding: 0 4px 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .matches-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0;
+  }
+
+  .match-slot {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 5px 5px;
+    min-height: 74px;
+  }
+
+  .match-card {
+    background: #0f2a18;
+    border: 1px solid #1e4a2a;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    transition: border-color 0.2s;
+  }
+  .match-card:hover {
+    border-color: #2a6a3a;
+  }
+
+  .team-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    font-size: 11px;
+    line-height: 1.3;
+    min-height: 33px;
+    cursor: pointer;
+    transition: background 0.15s;
+    color: #c8e8d4;
+    user-select: none;
+  }
+  .team-row:hover { background: rgba(255,255,255,0.05); }
+  .team-row + .team-row { border-top: 1px solid #1a3a22; }
+
+  .team-row.winner {
+    background: #163d20;
+    color: #7de8a8;
+    font-weight: 500;
+  }
+  .team-row.winner:hover { background: #1a4a26; }
+
+  .team-seed {
+    font-size: 9px;
+    font-weight: 600;
+    color: #4a8c5c;
+    min-width: 14px;
+    text-align: right;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .team-row.winner .team-seed { color: #4db87a; }
+
+  .team-name { flex: 1; word-break: break-word; }
+
+  .team-check {
+    font-size: 10px;
+    color: #4db87a;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .tbd {
+    color: #2d5c3a;
+    font-style: italic;
+    font-size: 10px;
+  }
+
+  /* ── FINAL CENTER ── */
+  .final-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 154px;
+    max-width: 180px;
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+  .final-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #4a8c5c;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .final-card {
+    background: #0f2a18;
+    border: 1px solid #2a6a3a;
+    border-radius: 8px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .final-team {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    font-size: 11px;
+    color: #7de8a8;
+    font-weight: 500;
+    min-height: 35px;
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+  }
+  .final-team:hover { background: rgba(255,255,255,0.05); }
+  .final-team + .final-team { border-top: 1px solid #1e4a2a; }
+
+  .champion-box {
+    background: linear-gradient(145deg, #1a3a10 0%, #0f2a18 100%);
+    border: 1.5px solid #C9971A;
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+    width: 100%;
+  }
+  .champion-label {
+    font-size: 9px;
+    color: #9a7a3c;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .champion-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #f5c842;
+    line-height: 1.3;
+  }
+  .trophy { font-size: 20px; display: block; margin-bottom: 6px; }
+
+  /* ── COURT / TIME BADGE ── */
+  .match-meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px 3px;
+    border-bottom: 1px solid #1a3a22;
+    background: #0c2214;
+  }
+  .court-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 5px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .court-central { background: rgba(245,200,66,0.18); color: #f5c842; }
+  .court-pietrangeli { background: rgba(77,138,184,0.18); color: #7ab8e8; }
+  .court-campo6 { background: rgba(184,77,138,0.18); color: #e87ab8; }
+  .match-time {
+    font-size: 10px;
+    color: #7aad8a;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    margin-left: auto;
+  }
+
+  /* ── INSTRUCTIONS ── */
+  .instructions {
+    margin-top: 20px;
+    font-size: 11px;
+    color: #4a8c5c;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Italy Major 2026</div>
+    <div class="page-sub">Men's Draw — Rome, ITA</div>
+  </div>
+  <div class="tournament-info">
+    31 May – 7 Jun 2026<br>
+    Prize money: €1,044,849<br>
+    Premier Padel Tour
+  </div>
+</div>
+
+<!-- SEEDS -->
+<div class="seeds-section">
+  <div class="section-label">Seeded teams — points &amp; gap to rank above</div>
+  <div class="seeds-grid" id="seeds-grid"></div>
+</div>
+
+<!-- BRACKET -->
+<div class="bracket-section">
+  <div class="section-label">Interactive bracket — click a team to advance them</div>
+  <div class="bracket-outer" id="bracket"></div>
+</div>
+
+<div class="instructions">Click any team to advance · Click the winning team again to undo</div>
+
+<script>
+const SEEDS = [
+  { rank:1,  team:'Tapia / Coello',         pts:42218 },
+  { rank:2,  team:'Galán / Chingotto',       pts:36714 },
+  { rank:3,  team:'Yanguas / Stupaczuk',     pts:13894 },
+  { rank:4,  team:'Lebrón / Augsburger',     pts:13797 },
+  { rank:5,  team:'Sanz / Nieto Ruiz',       pts:11296 },
+  { rank:6,  team:'Di Nenno / Navarro',      pts:11291 },
+  { rank:7,  team:'Leal / Guerrero',         pts:8881  },
+  { rank:8,  team:'Garrido / Bergamini',     pts:7266  },
+  { rank:9,  team:'González / Campagnolo',   pts:6851  },
+  { rank:10, team:'Alonso / Goñi Lacabe',    pts:4922  },
+  { rank:11, team:'Esbri / Ruiz Granados',   pts:4914  },
+  { rank:12, team:'Aguirre / Arroyo',        pts:4664  },
+  { rank:13, team:'García / Jiménez',        pts:4564  },
+  { rank:14, team:'Bautista / Jofre',        pts:4543  },
+  { rank:15, team:'Arce / Tello',            pts:4466  },
+  { rank:16, team:'Barahona / Alfonso',      pts:4359  },
+];
+
+// R16 matchups — 0-3 = left/top half, 4-7 = right/bottom half
+// court: 'central' | 'pietrangeli' | 'campo6'
+const R16 = [
+  { t1:{name:'Tapia / Coello',          seed:1},  t2:{name:'Gala / Jensen Sirvent',     seed:null}, court:'central',      time:'Not before 6:30 PM' },
+  { t1:{name:'Esbri / Ruiz Granados',   seed:11}, t2:{name:'Garrido / Bergamini',       seed:8},    court:'pietrangeli',   time:'Not before 6:30 PM' },
+  { t1:{name:'Di Nenno / Navarro',      seed:6},  t2:{name:'Alonso / Goñi Lacabe',      seed:10},   court:'pietrangeli',   time:'Not before 8:00 PM' },
+  { t1:{name:'González / Campagnolo',   seed:9},  t2:{name:'Yanguas / Stupaczuk',       seed:3},    court:'central',       time:'Not before 8:00 PM' },
+  { t1:{name:'Lebrón / Augsburger',     seed:4},  t2:{name:'Aguirre / Arroyo',          seed:12},   court:'pietrangeli',   time:'Not before 3:00 PM' },
+  { t1:{name:'Arce / Tello',            seed:15}, t2:{name:'Sanz / Nieto Ruiz',         seed:5},    court:'campo6',        time:'Not before 1:30 PM' },
+  { t1:{name:'Collado / Hernández',     seed:null},t2:{name:'Bautista / Jofre',         seed:14},   court:'campo6',        time:'Not before 3:00 PM' },
+  { t1:{name:'Barahona / Alfonso',      seed:16}, t2:{name:'Galán / Chingotto',         seed:2},    court:'central',       time:'Not before 1:30 PM' },
+];
+
+// state[round][matchIdx] = null | 't1' | 't2'
+// round 0 = R16 (8 matches), round 1 = QF (4), round 2 = SF (2), round 3 = F (1)
+const state = {
+  winners: [
+    [null,null,null,null,null,null,null,null],
+    [null,null,null,null],
+    [null,null],
+    [null],
+  ]
+};
+
+function getWinner(round, idx) {
+  const w = state.winners[round][idx];
+  if (!w) return null;
+  if (round === 0) {
+    const m = R16[idx];
+    return w === 't1' ? m.t1 : m.t2;
+  }
+  const p1 = getWinner(round - 1, idx * 2);
+  const p2 = getWinner(round - 1, idx * 2 + 1);
+  return w === 't1' ? p1 : p2;
+}
+
+function getTeams(round, matchIdx) {
+  if (round === 0) {
+    return { t1: R16[matchIdx].t1, t2: R16[matchIdx].t2 };
+  }
+  return {
+    t1: getWinner(round - 1, matchIdx * 2),
+    t2: getWinner(round - 1, matchIdx * 2 + 1),
+  };
+}
+
+function clearDownstream(round, matchIdx) {
+  if (round >= 3) return;
+  const nextRound = round + 1;
+  const nextMatch = Math.floor(matchIdx / 2);
+  if (state.winners[nextRound][nextMatch] !== null) {
+    state.winners[nextRound][nextMatch] = null;
+    clearDownstream(nextRound, nextMatch);
+  }
+}
+
+function setWinner(round, matchIdx, side) {
+  if (state.winners[round][matchIdx] === side) {
+    state.winners[round][matchIdx] = null;
+    clearDownstream(round, matchIdx);
+  } else {
+    state.winners[round][matchIdx] = side;
+    clearDownstream(round, matchIdx);
+  }
+  render();
+}
+
+/* ── BUILD MATCH CARD ── */
+function buildCard(round, matchIdx) {
+  const { t1, t2 } = getTeams(round, matchIdx);
+  const winner = state.winners[round][matchIdx];
+
+  const card = document.createElement('div');
+  card.className = 'match-card';
+
+  // Court/time badge — R16 only
+  if (round === 0) {
+    const m = R16[matchIdx];
+    const courtNames = { central:'Campo Centrale', pietrangeli:'Pietrangeli', campo6:'Campo 6' };
+    const courtClasses = { central:'court-central', pietrangeli:'court-pietrangeli', campo6:'court-campo6' };
+    const meta = document.createElement('div');
+    meta.className = 'match-meta';
+    const badge = document.createElement('span');
+    badge.className = 'court-badge ' + (courtClasses[m.court] || '');
+    badge.textContent = courtNames[m.court] || m.court;
+    const timeEl = document.createElement('span');
+    timeEl.className = 'match-time';
+    timeEl.textContent = m.time;
+    meta.appendChild(badge);
+    meta.appendChild(timeEl);
+    card.appendChild(meta);
+  }
+
+  function makeRow(team, side) {
+    const row = document.createElement('div');
+    row.className = 'team-row' + (winner === side ? ' winner' : '');
+
+    if (team) {
+      const seedEl = document.createElement('span');
+      seedEl.className = 'team-seed';
+      seedEl.textContent = team.seed || '';
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'team-name';
+      nameEl.textContent = team.name;
+
+      row.appendChild(seedEl);
+      row.appendChild(nameEl);
+
+      if (winner === side) {
+        const chk = document.createElement('span');
+        chk.className = 'team-check';
+        chk.textContent = '✓';
+        row.appendChild(chk);
+      }
+
+      row.addEventListener('click', () => setWinner(round, matchIdx, side));
+    } else {
+      const tbd = document.createElement('span');
+      tbd.className = 'tbd';
+      tbd.textContent = 'TBD';
+      row.appendChild(tbd);
+    }
+    return row;
+  }
+
+  const divider = document.createElement('div');
+  divider.style.cssText = 'height:1px; background:#1a3a22;';
+
+  card.appendChild(makeRow(t1, 't1'));
+  card.appendChild(divider);
+  card.appendChild(makeRow(t2, 't2'));
+  return card;
+}
+
+/* ── BUILD ROUND COLUMN ── */
+function buildRoundCol(label, matchIndices, round) {
+  const col = document.createElement('div');
+  col.className = 'round-col';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'round-header';
+  hdr.textContent = label;
+  col.appendChild(hdr);
+
+  const matchesWrap = document.createElement('div');
+  matchesWrap.className = 'matches-col';
+
+  matchIndices.forEach((mi) => {
+    const slot = document.createElement('div');
+    slot.className = 'match-slot';
+    slot.appendChild(buildCard(round, mi));
+    matchesWrap.appendChild(slot);
+  });
+
+  col.appendChild(matchesWrap);
+  return col;
+}
+
+/* ── RENDER ── */
+function render() {
+  const bracket = document.getElementById('bracket');
+  bracket.innerHTML = '';
+
+  // LEFT HALF (top half of draw)
+  const leftHalf = document.createElement('div');
+  leftHalf.className = 'half half-left';
+  leftHalf.appendChild(buildRoundCol('Round of 16', [0,1,2,3], 0));
+  leftHalf.appendChild(buildRoundCol('Quarterfinals', [0,1], 1));
+  leftHalf.appendChild(buildRoundCol('Semifinals', [0], 2));
+  bracket.appendChild(leftHalf);
+
+  // FINAL
+  const finalCol = document.createElement('div');
+  finalCol.className = 'final-col';
+
+  const finalLabel = document.createElement('div');
+  finalLabel.className = 'final-label';
+  finalLabel.textContent = 'Final';
+  finalCol.appendChild(finalLabel);
+
+  const champ = state.winners[3][0] !== null ? getWinner(3, 0) : null;
+
+  if (champ) {
+    const champBox = document.createElement('div');
+    champBox.className = 'champion-box';
+    champBox.innerHTML = `<span class="trophy">🏆</span><div class="champion-label">Champion</div><div class="champion-name">${champ.name}</div>`;
+    finalCol.appendChild(champBox);
+  } else {
+    const sf1 = getWinner(2, 0);
+    const sf2 = getWinner(2, 1);
+    const fc = document.createElement('div');
+    fc.className = 'final-card';
+
+    [sf1, sf2].forEach((team, idx) => {
+      const row = document.createElement('div');
+      row.className = 'final-team';
+      if (team) {
+        row.textContent = team.name;
+        row.addEventListener('click', () => setWinner(3, 0, idx === 0 ? 't1' : 't2'));
+      } else {
+        const tbd = document.createElement('span');
+        tbd.className = 'tbd';
+        tbd.textContent = 'TBD';
+        row.appendChild(tbd);
+      }
+      if (idx === 0) {
+        fc.appendChild(row);
+        const div = document.createElement('div');
+        div.style.cssText = 'height:1px; background:#1e4a2a;';
+        fc.appendChild(div);
+      } else {
+        fc.appendChild(row);
+      }
+    });
+
+    finalCol.appendChild(fc);
+  }
+
+  bracket.appendChild(finalCol);
+
+  // RIGHT HALF (bottom half of draw)
+  const rightHalf = document.createElement('div');
+  rightHalf.className = 'half half-right';
+  rightHalf.appendChild(buildRoundCol('Round of 16', [4,5,6,7], 0));
+  rightHalf.appendChild(buildRoundCol('Quarterfinals', [2,3], 1));
+  rightHalf.appendChild(buildRoundCol('Semifinals', [1], 2));
+  bracket.appendChild(rightHalf);
+}
+
+/* ── SEEDS ── */
+function renderSeeds() {
+  const grid = document.getElementById('seeds-grid');
+  SEEDS.forEach((s, i) => {
+    const above = i > 0 ? SEEDS[i - 1] : null;
+    const diff = above ? above.pts - s.pts : null;
+    const card = document.createElement('div');
+    card.className = 'seed-card';
+    card.innerHTML = `
+      <div class="seed-rank">#${s.rank}</div>
+      <div class="seed-name">${s.team.replace(' / ', '<br>')}</div>
+      <div class="seed-pts">${s.pts.toLocaleString()}</div>
+      ${diff !== null
+        ? `<div class="seed-diff gap">+${diff.toLocaleString()} to #${s.rank - 1}</div>`
+        : `<div class="seed-diff top">Top seed</div>`}
+    `;
+    grid.appendChild(card);
+  });
+}
+
+renderSeeds();
+render();
+</script>
+</body>
+</html>
