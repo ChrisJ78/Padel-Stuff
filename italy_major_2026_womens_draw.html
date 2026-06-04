@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BNL Italy Major 2026 — Women's Draw</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a18;
+  --bg2:#0f0f22;
+  --bg3:#15152e;
+  --bg4:#1c1c38;
+  --bg5:#242448;
+  --text:#e8e4f8;
+  --text2:#9890c0;
+  --text3:#5c5680;
+  --border:rgba(180,160,255,0.10);
+  --border2:rgba(180,160,255,0.20);
+  --border3:rgba(180,160,255,0.35);
+  --acc:#7c5cbf;
+  --acc2:#9b7de0;
+  --acc3:#b8a0f0;
+  --acc-glow:rgba(124,92,191,0.25);
+  --gold:#f5c842;
+  --gold2:#d4a820;
+  --win-bg:#1e163d;
+  --win-border:#7c5cbf;
+  --win-text:#c0a8ff;
+  --elim-text:#3d395c;
+  --champ-bg:#2a1f00;
+  --champ-border:#f5c842;
+  --champ-text:#f5c842;
+  --court-central:#f5c842;
+  --court-pietr:#5b9aef;
+  --court-c6:#e060b0;
+  --font-main:'Barlow',sans-serif;
+  --font-cond:'Barlow Condensed',sans-serif;
+}
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:var(--bg);color:var(--text);
+  font-family:var(--font-main);
+}
+
+/* ── TOPBAR ── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:54px;
+  background:rgba(10,10,24,0.96);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border2);
+  display:flex;align-items:center;padding:0 20px;gap:14px;
+}
+.tb-logo{
+  font-family:var(--font-cond);font-size:22px;font-weight:800;
+  letter-spacing:0.12em;color:var(--gold);text-transform:uppercase;
+}
+.tb-sub{
+  font-size:10px;color:var(--text2);letter-spacing:0.16em;text-transform:uppercase;
+  margin-top:1px;
+}
+.tb-badge{
+  background:rgba(180,160,255,0.12);border:1px solid var(--border2);
+  border-radius:12px;padding:3px 10px;
+  font-family:var(--font-cond);font-size:11px;font-weight:600;
+  letter-spacing:0.1em;color:var(--acc3);text-transform:uppercase;
+}
+.tb-sep{width:1px;height:28px;background:var(--border2);}
+.tb-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
+#zoom-val{font-size:11px;color:var(--text2);min-width:36px;text-align:center;font-family:var(--font-cond);}
+.tb-btn{
+  background:var(--bg4);border:1px solid var(--border2);
+  color:var(--text);border-radius:6px;padding:5px 12px;
+  font-family:var(--font-cond);font-size:12px;font-weight:600;letter-spacing:0.08em;
+  cursor:pointer;transition:all 0.15s;
+}
+.tb-btn:hover{background:var(--bg5);border-color:var(--acc);}
+
+/* ── SEEDS PANEL ── */
+#seeds-panel{
+  position:fixed;top:54px;left:0;right:0;z-index:190;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border2);
+  padding:14px 20px 16px;
+  transition:transform 0.3s ease;
+}
+#seeds-panel.collapsed{transform:translateY(calc(-100% - 54px));}
+.seeds-title{
+  font-family:var(--font-cond);font-size:11px;font-weight:700;
+  letter-spacing:0.18em;color:var(--text3);text-transform:uppercase;
+  margin-bottom:10px;
+}
+.seeds-grid{
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  gap:6px;
+}
+.seed-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;
+  transition:border-color 0.15s;
+}
+.seed-card:hover{border-color:var(--border2);}
+.seed-card.s1{border-color:var(--gold2);background:rgba(245,200,66,0.06);}
+.seed-rank{
+  font-family:var(--font-cond);font-size:10px;font-weight:700;
+  color:var(--text3);letter-spacing:0.1em;margin-bottom:3px;
+}
+.seed-card.s1 .seed-rank{color:var(--gold);}
+.seed-names{
+  font-family:var(--font-cond);font-size:12px;font-weight:600;
+  color:var(--text);line-height:1.3;margin-bottom:4px;
+}
+.seed-pts{
+  font-size:10px;color:var(--text2);font-weight:500;
+}
+.seed-top-badge{
+  display:inline-block;background:var(--gold);color:#000;
+  font-family:var(--font-cond);font-size:9px;font-weight:800;
+  letter-spacing:0.12em;padding:1px 6px;border-radius:3px;margin-top:3px;
+}
+.seed-gap{
+  display:inline-block;background:rgba(245,200,66,0.12);
+  border:1px solid rgba(245,200,66,0.25);
+  color:var(--gold);
+  font-family:var(--font-cond);font-size:9px;font-weight:700;
+  letter-spacing:0.06em;padding:1px 6px;border-radius:3px;margin-top:3px;
+}
+.seeds-toggle-row{
+  display:flex;justify-content:center;margin-top:10px;
+}
+#seeds-toggle-btn{
+  background:none;border:1px solid var(--border2);color:var(--text2);
+  border-radius:4px;padding:3px 16px;font-family:var(--font-cond);
+  font-size:11px;letter-spacing:0.1em;cursor:pointer;
+  transition:all 0.15s;
+}
+#seeds-toggle-btn:hover{border-color:var(--acc);color:var(--acc3);}
+
+/* ── MAIN SCROLL AREA ── */
+#scroll-wrap{
+  position:fixed;left:0;right:0;bottom:0;
+  overflow:auto;
+  background:var(--bg);
+}
+#bracket-outer{
+  display:flex;align-items:stretch;
+  padding:30px 24px 50px;
+  gap:0;
+  min-width:max-content;
+}
+
+/* ── COLUMNS ── */
+.col{
+  display:flex;flex-direction:column;
+  gap:0;
+}
+.col-label{
+  font-family:var(--font-cond);font-size:10px;font-weight:700;
+  letter-spacing:0.18em;color:var(--text3);text-transform:uppercase;
+  text-align:center;margin-bottom:12px;padding:0 4px;
+}
+.col-inner{
+  flex:1;display:flex;flex-direction:column;
+  position:relative;
+}
+/* connector lines between columns */
+.connector{
+  width:18px;display:flex;flex-direction:column;
+  position:relative;flex-shrink:0;
+}
+
+/* ── MATCH CARDS ── */
+.match-wrap{
+  display:flex;flex-direction:column;
+  flex:1;
+  justify-content:center;
+  padding:6px 0;
+}
+.match-card{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+  width:190px;
+  transition:border-color 0.15s;
+  position:relative;
+}
+.match-card:hover{border-color:var(--border2);}
+.match-meta{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 8px 4px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,0.02);
+}
+.court-badge{
+  font-family:var(--font-cond);font-size:9px;font-weight:700;
+  letter-spacing:0.1em;padding:2px 6px;border-radius:3px;
+  text-transform:uppercase;
+}
+.court-central{background:rgba(245,200,66,0.15);color:var(--court-central);border:1px solid rgba(245,200,66,0.25);}
+.court-pietr{background:rgba(91,154,239,0.15);color:var(--court-pietr);border:1px solid rgba(91,154,239,0.25);}
+.court-c6{background:rgba(224,96,176,0.15);color:var(--court-c6);border:1px solid rgba(224,96,176,0.25);}
+.court-tbd{background:rgba(100,100,100,0.10);color:var(--text3);border:1px solid var(--border);}
+.match-time{
+  font-family:var(--font-cond);font-size:10px;font-weight:600;
+  color:var(--text2);margin-left:auto;
+}
+.team-row{
+  display:flex;align-items:center;gap:0;
+  padding:7px 8px;
+  cursor:pointer;
+  transition:background 0.12s;
+  border-bottom:1px solid var(--border);
+  min-height:36px;
+  position:relative;
+}
+.team-row:last-child{border-bottom:none;}
+.team-row:hover{background:rgba(180,160,255,0.07);}
+.team-row.winner{
+  background:var(--win-bg);
+  cursor:pointer;
+}
+.team-row.winner:hover{background:rgba(30,22,61,0.9);}
+.team-row.eliminated{opacity:0.3;cursor:default;}
+.team-row.eliminated:hover{background:none;}
+.team-row.champion{
+  background:var(--champ-bg);
+  cursor:pointer;
+}
+.team-row.champion:hover{background:rgba(42,31,0,0.9);}
+.team-row.tbd{cursor:default;}
+.team-row.tbd:hover{background:none;}
+.seed-num{
+  font-family:var(--font-cond);font-size:10px;font-weight:700;
+  color:var(--text3);width:18px;flex-shrink:0;
+}
+.team-row.winner .seed-num{color:var(--acc2);}
+.team-row.champion .seed-num{color:var(--gold);}
+.team-names{
+  display:flex;flex-direction:column;flex:1;
+  overflow:hidden;
+}
+.t-name1,.t-name2{
+  font-family:var(--font-cond);font-size:12px;font-weight:600;
+  letter-spacing:0.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:var(--text);line-height:1.25;
+}
+.t-flag{
+  font-size:9px;color:var(--text3);margin-left:3px;
+}
+.team-row.winner .t-name1,
+.team-row.winner .t-name2{color:var(--win-text);}
+.team-row.eliminated .t-name1,
+.team-row.eliminated .t-name2{color:var(--elim-text);}
+.team-row.champion .t-name1,
+.team-row.champion .t-name2{color:var(--champ-text);}
+.team-row.tbd .t-name1,
+.team-row.tbd .t-name2{color:var(--text3);font-style:italic;}
+.win-check{
+  width:14px;height:14px;flex-shrink:0;
+  border-radius:50%;background:var(--acc);
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;color:#fff;
+}
+.team-row.champion .win-check{background:var(--gold);color:#000;}
+.trophy-icon{font-size:14px;margin-left:4px;}
+
+/* ── TBD CARD ── */
+.tbd-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:10px;width:190px;
+  padding:12px 10px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.tbd-slot{
+  font-family:var(--font-cond);font-size:12px;
+  color:var(--text3);font-style:italic;
+  padding:4px 0;border-bottom:1px solid var(--border);
+}
+.tbd-slot:last-child{border-bottom:none;}
+
+/* ── FINAL COLUMN ── */
+.final-wrap{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:200px;flex-shrink:0;
+  padding:0 4px;
+  position:relative;
+}
+.final-label{
+  font-family:var(--font-cond);font-size:10px;font-weight:700;
+  letter-spacing:0.18em;color:var(--text3);text-transform:uppercase;
+  margin-bottom:12px;
+}
+.final-card{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:12px;overflow:hidden;width:192px;
+  box-shadow:0 0 30px rgba(124,92,191,0.12);
+}
+.final-card.has-champ{
+  border-color:var(--gold2);
+  box-shadow:0 0 40px rgba(245,200,66,0.2);
+}
+.final-header{
+  background:var(--bg4);padding:8px 10px;
+  border-bottom:1px solid var(--border2);
+  font-family:var(--font-cond);font-size:11px;font-weight:700;
+  letter-spacing:0.16em;color:var(--text3);text-transform:uppercase;
+  text-align:center;
+}
+.final-header.crowned{color:var(--gold);}
+
+/* ── SVG CONNECTORS ── */
+svg.conn-svg{
+  position:absolute;
+  pointer-events:none;
+  overflow:visible;
+}
+svg.conn-svg path{
+  fill:none;stroke:var(--border2);stroke-width:1;
+}
+
+/* ── HALF LABEL ── */
+.half-label{
+  font-family:var(--font-cond);font-size:10px;font-weight:700;
+  letter-spacing:0.16em;color:rgba(180,160,255,0.25);
+  text-transform:uppercase;writing-mode:vertical-rl;
+  position:absolute;left:-18px;top:50%;transform:translateY(-50%) rotate(180deg);
+  pointer-events:none;
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div>
+    <div class="tb-logo">Italy Major 2026</div>
+    <div class="tb-sub">Rome · 31 May – 7 Jun · € 1,044,849</div>
+  </div>
+  <div class="tb-sep"></div>
+  <div class="tb-badge">Women's Draw · R16</div>
+  <div class="tb-right">
+    <button class="tb-btn" onclick="zoomBracket(-0.1)">−</button>
+    <span id="zoom-val">100%</span>
+    <button class="tb-btn" onclick="zoomBracket(0.1)">+</button>
+    <button class="tb-btn" onclick="resetAll()">↺ Reset</button>
+    <button class="tb-btn" id="seeds-toggle-btn" onclick="toggleSeeds()">▲ Seeds</button>
+  </div>
+</div>
+
+<!-- SEEDS PANEL -->
+<div id="seeds-panel">
+  <div class="seeds-title">Seeded Teams · Women's R16</div>
+  <div class="seeds-grid" id="seeds-grid"></div>
+</div>
+
+<!-- BRACKET SCROLL AREA -->
+<div id="scroll-wrap">
+  <div id="bracket-outer" id="bracket-zoom-target">
+    <!-- Built by JS -->
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+
+const SEEDS = [
+  {rank:1, names:["G. Triay Pons","D. Brea Senesi"], pts:36018},
+  {rank:2, names:["P. Josemaria Martin","B. Gonzalez Fernandez"], pts:30751},
+  {rank:3, names:["A. Sanchez Fallada","A. Ustero Prieto"], pts:21531},
+  {rank:4, names:["C. Fernandez Sanchez","S. Araujo"], pts:19461},
+  {rank:5, names:["T. Icardo Alcorisa","C. Jensen"], pts:12109},
+  {rank:6, names:["M. Ortega Gallego","M. Calvo"], pts:11176},
+  {rank:7, names:["A. Salazar Bengoechea","A. Alonso De Villa"], pts:10058},
+  {rank:8, names:["M. Guinart España","V. Virseda"], pts:8288},
+  {rank:9, names:["B. Caldera Sanchez","C. Goenaga Garcia"], pts:7404},
+  {rank:10, names:["A. Osoro Ulrich","V. Iglesias Segador"], pts:7031},
+  {rank:11, names:["M. Fassio Goyeneche","R. Eugenio Barrera"], pts:5154},
+  {rank:12, names:["C. Orsi","P. Llaguno Zielinski"], pts:4856},
+  {rank:13, names:["L. Rufo Ortiz","J. Castello Lopez"], pts:4664},
+  {rank:14, names:["M. Barrera De La Fuente","J. Velasco Postiguillo"], pts:4156},
+  {rank:15, names:["L. Sainz Pelegri","J. Montes Cabruja"], pts:4154},
+  {rank:16, names:["K. Sharifova","A. Collombon"], pts:3518},
+];
+
+// Courts
+const C_CENTRAL = 'central';
+const C_PIETR   = 'pietr';
+const C_C6      = 'c6';
+
+// R16 matches — top half (left side of bracket, positions 0-3)
+// bottom half (right side, positions 4-7)
+// Each team: {seed, p1, p2, flag1, flag2}
+// court / time for order of play
+const R16_MATCHES = [
+  // TOP HALF — feeds left→right
+  {
+    id:'m1',
+    teamA:{seed:1,  p1:"G. Triay Pons",     p2:"D. Brea Senesi",       f1:"ESP",f2:"ARG"},
+    teamB:{seed:0,  p1:"C. Escacena Montero",p2:"P. Martinez Fortun",   f1:"ESP",f2:"ESP"},
+    court:C_CENTRAL, time:"12:00 PM"
+  },
+  {
+    id:'m2',
+    teamA:{seed:16, p1:"K. Sharifova",       p2:"A. Collombon",         f1:"",  f2:"FRA"},
+    teamB:{seed:5,  p1:"T. Icardo Alcorisa", p2:"C. Jensen",            f1:"ESP",f2:"ARG"},
+    court:C_C6,     time:"12:00 PM"
+  },
+  {
+    id:'m3',
+    teamA:{seed:0,  p1:"N. Rodriguez Camacho",p2:"G. Dal Pozzo",        f1:"ESP",f2:"ITA"},
+    teamB:{seed:12, p1:"C. Orsi",             p2:"P. Llaguno Zielinski",f1:"ITA",f2:"ESP"},
+    court:C_PIETR,  time:"1:30 PM"
+  },
+  {
+    id:'m4',
+    teamA:{seed:9,  p1:"B. Caldera Sanchez", p2:"C. Goenaga Garcia",   f1:"ESP",f2:"ESP"},
+    teamB:{seed:4,  p1:"C. Fernandez Sanchez",p2:"S. Araujo",          f1:"ESP",f2:"POR"},
+    court:C_PIETR,  time:"12:00 PM"
+  },
+  // BOTTOM HALF — feeds right→left
+  {
+    id:'m5',
+    teamA:{seed:3,  p1:"A. Sanchez Fallada", p2:"A. Ustero Prieto",    f1:"ESP",f2:"ESP"},
+    teamB:{seed:10, p1:"A. Osoro Ulrich",    p2:"V. Iglesias Segador", f1:"ARG",f2:"ESP"},
+    court:C_CENTRAL, time:"5:00 PM"
+  },
+  {
+    id:'m6',
+    teamA:{seed:0,  p1:"N. Canovas Paredes", p2:"M.E. Rodriguez Abajo",f1:"ESP",f2:"ESP"},
+    teamB:{seed:8,  p1:"M. Guinart España",  p2:"V. Virseda",          f1:"ESP",f2:"ESP"},
+    court:C_PIETR,  time:"3:00 PM"
+  },
+  {
+    id:'m7',
+    teamA:{seed:6,  p1:"M. Ortega Gallego",  p2:"M. Calvo",            f1:"ESP",f2:"ESP"},
+    teamB:{seed:15, p1:"L. Sainz Pelegri",   p2:"J. Montes Cabruja",   f1:"ESP",f2:"ESP"},
+    court:C_PIETR,  time:"5:00 PM"
+  },
+  {
+    id:'m8',
+    teamA:{seed:11, p1:"M. Fassio Goyeneche",p2:"R. Eugenio Barrera",  f1:"ARG",f2:"ESP"},
+    teamB:{seed:2,  p1:"P. Josemaria Martin",p2:"B. Gonzalez Fernandez",f1:"ESP",f2:"ESP"},
+    court:C_CENTRAL, time:"3:00 PM"
+  },
+];
+
+// State: picks[matchId] = 'A'|'B'|null
+const picks = {};
+R16_MATCHES.forEach(m => picks[m.id] = null);
+// QF/SF/Final
+// QF: qf1(m1 vs m2), qf2(m3 vs m4), qf3(m5 vs m6), qf4(m7 vs m8)
+// SF: sf1(qf1 vs qf2), sf2(qf3 vs qf4)
+// Final: f1(sf1 vs sf2)
+const QF_IDS = ['qf1','qf2','qf3','qf4'];
+const SF_IDS = ['sf1','sf2'];
+const FIN_ID = 'fin';
+[...QF_IDS,...SF_IDS,FIN_ID].forEach(id => picks[id]=null);
+
+// ── SEEDS PANEL ───────────────────────────────────────────────────────────
+function buildSeeds(){
+  const grid = document.getElementById('seeds-grid');
+  grid.innerHTML = '';
+  SEEDS.forEach((s,i)=>{
+    const card = document.createElement('div');
+    card.className = 'seed-card' + (i===0?' s1':'');
+    const gap = i===0 ? null : SEEDS[i-1].pts - s.pts;
+    card.innerHTML = `
+      <div class="seed-rank">${s.rank}. Seeded</div>
+      <div class="seed-names">${s.names[0]}<br>${s.names[1]}</div>
+      <div class="seed-pts">${s.pts.toLocaleString()} pts</div>
+      ${i===0
+        ? '<span class="seed-top-badge">TOP SEED</span>'
+        : `<span class="seed-gap">−${gap.toLocaleString()} to #${i}</span>`
+      }
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ── SEEDS TOGGLE ─────────────────────────────────────────────────────────
+let seedsVisible = true;
+function toggleSeeds(){
+  seedsVisible = !seedsVisible;
+  const panel = document.getElementById('seeds-panel');
+  const btn = document.getElementById('seeds-toggle-btn');
+  if(seedsVisible){
+    panel.style.transform='';
+    btn.textContent='▲ Seeds';
+  } else {
+    panel.style.transform='translateY(-200px)';
+    btn.textContent='▼ Seeds';
+  }
+  updateScrollTop();
+}
+function updateScrollTop(){
+  const tb = 54;
+  const sp = seedsVisible ? document.getElementById('seeds-panel').offsetHeight : 0;
+  document.getElementById('scroll-wrap').style.top = (tb + sp) + 'px';
+}
+
+// ── COURT BADGE HTML ──────────────────────────────────────────────────────
+function courtBadge(court,time){
+  if(!court) return '';
+  let cls='court-tbd',label='TBD';
+  if(court===C_CENTRAL){cls='court-central';label='Campo Central';}
+  else if(court===C_PIETR){cls='court-pietr';label='Pietrangeli';}
+  else if(court===C_C6){cls='court-c6';label='Campo 6';}
+  return `<div class="match-meta">
+    <span class="court-badge ${cls}">${label}</span>
+    ${time?`<span class="match-time">${time}</span>`:''}
+  </div>`;
+}
+
+// ── TEAM LABEL ────────────────────────────────────────────────────────────
+function teamLabel(t){
+  if(!t) return {p1:'TBD',p2:'',seed:0};
+  return t;
+}
+
+// ── WINNER RESOLUTION ────────────────────────────────────────────────────
+function getWinner(matchId){
+  const p = picks[matchId];
+  if(!p) return null;
+  // R16
+  const r16 = R16_MATCHES.find(m=>m.id===matchId);
+  if(r16) return p==='A'?r16.teamA:r16.teamB;
+  // QF
+  const qfIdx = QF_IDS.indexOf(matchId);
+  if(qfIdx!==-1){
+    const r16Pair = qfIdx<2 ? [R16_MATCHES[qfIdx*2],R16_MATCHES[qfIdx*2+1]] : [R16_MATCHES[qfIdx*2],R16_MATCHES[qfIdx*2+1]];
+    const tA = getWinner(R16_MATCHES[qfIdx*2].id);
+    const tB = getWinner(R16_MATCHES[qfIdx*2+1].id);
+    return p==='A'?tA:tB;
+  }
+  // SF
+  const sfIdx = SF_IDS.indexOf(matchId);
+  if(sfIdx!==-1){
+    const tA = getWinner(QF_IDS[sfIdx*2]);
+    const tB = getWinner(QF_IDS[sfIdx*2+1]);
+    return p==='A'?tA:tB;
+  }
+  // Final
+  if(matchId===FIN_ID){
+    const tA = getWinner(SF_IDS[0]);
+    const tB = getWinner(SF_IDS[1]);
+    return p==='A'?tA:tB;
+  }
+  return null;
+}
+
+function clearDownstream(matchId){
+  // clear everything after this match in the chain
+  const r16Idx = R16_MATCHES.findIndex(m=>m.id===matchId);
+  if(r16Idx!==-1){
+    const qfId = QF_IDS[Math.floor(r16Idx/2)];
+    picks[qfId]=null;
+    clearDownstream(qfId);
+    return;
+  }
+  const qfIdx = QF_IDS.indexOf(matchId);
+  if(qfIdx!==-1){
+    const sfId = SF_IDS[Math.floor(qfIdx/2)];
+    picks[sfId]=null;
+    clearDownstream(sfId);
+    return;
+  }
+  const sfIdx = SF_IDS.indexOf(matchId);
+  if(sfIdx!==-1){
+    picks[FIN_ID]=null;
+    return;
+  }
+}
+
+// ── PICK ─────────────────────────────────────────────────────────────────
+function pick(matchId, side){
+  if(picks[matchId]===side){
+    picks[matchId]=null;
+    clearDownstream(matchId);
+  } else {
+    picks[matchId]=side;
+    clearDownstream(matchId);
+  }
+  renderBracket();
+}
+
+// ── RESET ─────────────────────────────────────────────────────────────────
+function resetAll(){
+  R16_MATCHES.forEach(m=>picks[m.id]=null);
+  [...QF_IDS,...SF_IDS,FIN_ID].forEach(id=>picks[id]=null);
+  renderBracket();
+}
+
+// ── TEAM ROW HTML ─────────────────────────────────────────────────────────
+function teamRowHtml(team, side, matchId, isWinner, isElim, isChamp, isTbd){
+  if(isTbd || !team){
+    return `<div class="team-row tbd">
+      <span class="team-names"><span class="t-name1">TBD</span></span>
+    </div>`;
+  }
+  const seedStr = team.seed ? `[${team.seed}]` : '';
+  const cls = isChamp?'champion':isWinner?'winner':isElim?'eliminated':'';
+  const check = isChamp
+    ? `<span class="win-check">★</span><span class="trophy-icon">🏆</span>`
+    : isWinner ? `<span class="win-check">✓</span>` : '';
+  return `<div class="team-row ${cls}" onclick="pick('${matchId}','${side}')">
+    <span class="seed-num">${seedStr}</span>
+    <span class="team-names">
+      <span class="t-name1">${team.p1}</span>
+      <span class="t-name2">${team.p2}</span>
+    </span>
+    ${check}
+  </div>`;
+}
+
+// ── BUILD MATCH CARD ──────────────────────────────────────────────────────
+function matchCardHtml(matchId, teamA, teamB, court, time, isFinal){
+  const p = picks[matchId];
+  const winA = p==='A', winB = p==='B';
+  const bothPresent = teamA && teamB;
+  const isChampA = isFinal && winA;
+  const isChampB = isFinal && winB;
+
+  return `<div class="match-card" id="card-${matchId}">
+    ${courtBadge(court,time)}
+    ${teamRowHtml(teamA,'A',matchId,winA,winB&&bothPresent,isChampA,!teamA)}
+    ${teamRowHtml(teamB,'B',matchId,winB,winA&&bothPresent,isChampB,!teamB)}
+  </div>`;
+}
+
+// ── ZOOM ─────────────────────────────────────────────────────────────────
+let zoomLevel = 1.0;
+function zoomBracket(delta){
+  zoomLevel = Math.max(0.5, Math.min(1.6, zoomLevel+delta));
+  document.getElementById('bracket-outer').style.transform = `scale(${zoomLevel})`;
+  document.getElementById('bracket-outer').style.transformOrigin = 'top left';
+  document.getElementById('zoom-val').textContent = Math.round(zoomLevel*100)+'%';
+}
+
+// ── RENDER BRACKET ────────────────────────────────────────────────────────
+function renderBracket(){
+  const outer = document.getElementById('bracket-outer');
+  outer.innerHTML = '';
+
+  // Helper — make a flex column with label
+  function makeCol(label, width){
+    const col = document.createElement('div');
+    col.className='col';
+    col.style.width = width+'px';
+    const lbl = document.createElement('div');
+    lbl.className='col-label';
+    lbl.textContent=label;
+    col.appendChild(lbl);
+    const inner = document.createElement('div');
+    inner.className='col-inner';
+    col.appendChild(inner);
+    return {col, inner};
+  }
+  function conn(w){
+    const d=document.createElement('div');
+    d.className='connector';
+    d.style.width=w+'px';
+    return d;
+  }
+
+  const CARD_W = 190;
+  const CONN_W = 20;
+
+  // ── TOP HALF ──────────────────────────────────────────────────────────
+  // R16 top (m1..m4)
+  const topR16 = makeCol('Round of 16', CARD_W);
+  // QF top (qf1, qf2)
+  const topQF  = makeCol('Quarterfinals', CARD_W);
+  // SF top (sf1)
+  const topSF  = makeCol('Semifinals', CARD_W);
+
+  // ── FINAL CENTER ──────────────────────────────────────────────────────
+  const finalWrap = document.createElement('div');
+  finalWrap.className='final-wrap';
+  finalWrap.style.width='200px';
+  const finalLbl = document.createElement('div');
+  finalLbl.className='final-label';
+  finalLbl.textContent='Final';
+  finalWrap.appendChild(finalLbl);
+
+  // ── BOTTOM HALF ───────────────────────────────────────────────────────
+  const botSF  = makeCol('Semifinals', CARD_W);
+  const botQF  = makeCol('Quarterfinals', CARD_W);
+  const botR16 = makeCol('Round of 16', CARD_W);
+
+  // ── POPULATE R16 TOP ─────────────────────────────────────────────────
+  // 4 matches stacked, each taking 1/4 of height
+  for(let i=0;i<4;i++){
+    const m = R16_MATCHES[i];
+    const wrap = document.createElement('div');
+    wrap.className='match-wrap';
+    wrap.innerHTML = matchCardHtml(m.id, m.teamA, m.teamB, m.court, m.time, false);
+    topR16.inner.appendChild(wrap);
+  }
+
+  // ── POPULATE QF TOP ───────────────────────────────────────────────────
+  // qf1 = winner of m1 vs winner of m2
+  // qf2 = winner of m3 vs winner of m4
+  for(let q=0;q<2;q++){
+    const qid = QF_IDS[q];
+    const tA = getWinner(R16_MATCHES[q*2].id);
+    const tB = getWinner(R16_MATCHES[q*2+1].id);
+    const wrap = document.createElement('div');
+    wrap.className='match-wrap';
+    // 2 QF per half, each taking 1/2 of column height
+    wrap.style.flex='1';
+    wrap.innerHTML = matchCardHtml(qid, tA, tB, null, null, false);
+    topQF.inner.appendChild(wrap);
+  }
+
+  // ── POPULATE SF TOP ───────────────────────────────────────────────────
+  {
+    const tA = getWinner(QF_IDS[0]);
+    const tB = getWinner(QF_IDS[1]);
+    const wrap = document.createElement('div');
+    wrap.className='match-wrap';
+    wrap.innerHTML = matchCardHtml(SF_IDS[0], tA, tB, null, null, false);
+    topSF.inner.appendChild(wrap);
+  }
+
+  // ── FINAL CARD ────────────────────────────────────────────────────────
+  {
+    const tA = getWinner(SF_IDS[0]);
+    const tB = getWinner(SF_IDS[1]);
+    const isChamp = picks[FIN_ID]!==null;
+    const finCard = document.createElement('div');
+    finCard.className='final-card'+(isChamp?' has-champ':'');
+    const finHdr = document.createElement('div');
+    finHdr.className='final-header'+(isChamp?' crowned':'');
+    finHdr.textContent = isChamp ? '🏆 Champion' : 'Final';
+    finCard.appendChild(finHdr);
+    finCard.innerHTML += matchCardHtml(FIN_ID, tA, tB, null, null, true).replace('<div class="match-card"','<div class="match-card" style="width:100%;border:none;border-radius:0"').replace('</div>','</div>');
+    // Actually rebuild properly
+    finCard.innerHTML = '';
+    finCard.appendChild(finHdr);
+    const p = picks[FIN_ID];
+    const winA2 = p==='A', winB2 = p==='B';
+    const rows = document.createElement('div');
+    rows.innerHTML =
+      teamRowHtml(tA,'A',FIN_ID,winA2,winB2&&tA&&tB,winA2,!tA) +
+      teamRowHtml(tB,'B',FIN_ID,winB2,winA2&&tA&&tB,winB2,!tB);
+    finCard.appendChild(rows);
+    finalWrap.appendChild(finCard);
+  }
+
+  // ── POPULATE SF BOTTOM ────────────────────────────────────────────────
+  {
+    const tA = getWinner(QF_IDS[2]);
+    const tB = getWinner(QF_IDS[3]);
+    const wrap = document.createElement('div');
+    wrap.className='match-wrap';
+    wrap.innerHTML = matchCardHtml(SF_IDS[1], tA, tB, null, null, false);
+    botSF.inner.appendChild(wrap);
+  }
+
+  // ── POPULATE QF BOTTOM ────────────────────────────────────────────────
+  for(let q=2;q<4;q++){
+    const qid = QF_IDS[q];
+    const tA = getWinner(R16_MATCHES[q*2].id);
+    const tB = getWinner(R16_MATCHES[q*2+1].id);
+    const wrap = document.createElement('div');
+    wrap.className='match-wrap';
+    wrap.style.flex='1';
+    wrap.innerHTML = matchCardHtml(qid, tA, tB, null, null, false);
+    botQF.inner.appendChild(wrap);
+  }
+
+  // ── POPULATE R16 BOTTOM ───────────────────────────────────────────────
+  for(let i=4;i<8;i++){
+    const m = R16_MATCHES[i];
+    const wrap = document.createElement('div');
+    wrap.className='match-wrap';
+    wrap.innerHTML = matchCardHtml(m.id, m.teamA, m.teamB, m.court, m.time, false);
+    botR16.inner.appendChild(wrap);
+  }
+
+  // ── ASSEMBLE ──────────────────────────────────────────────────────────
+  // Left side: R16 → conn → QF → conn → SF → conn → Final
+  outer.appendChild(topR16.col);
+  outer.appendChild(conn(CONN_W));
+  outer.appendChild(topQF.col);
+  outer.appendChild(conn(CONN_W));
+  outer.appendChild(topSF.col);
+  outer.appendChild(conn(CONN_W));
+  outer.appendChild(finalWrap);
+  outer.appendChild(conn(CONN_W));
+  outer.appendChild(botSF.col);
+  outer.appendChild(conn(CONN_W));
+  outer.appendChild(botQF.col);
+  outer.appendChild(conn(CONN_W));
+  outer.appendChild(botR16.col);
+
+  // Apply zoom
+  outer.style.transform=`scale(${zoomLevel})`;
+  outer.style.transformOrigin='top left';
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────
+window.addEventListener('load', ()=>{
+  buildSeeds();
+  renderBracket();
+  // set scroll top after seeds panel measured
+  setTimeout(updateScrollTop, 50);
+});
+window.addEventListener('resize', updateScrollTop);
+</script>
+</body>
+</html>
