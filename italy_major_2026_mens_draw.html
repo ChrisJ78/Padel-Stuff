@@ -17,15 +17,7 @@
     padding: 24px 20px 40px;
   }
 
-  /* ── HEADER ── */
-  .page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #1e4a2a;
-  }
+  /* ── HEADER (replaced by topbar) ── */
   .page-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 26px;
@@ -324,6 +316,62 @@
     margin-left: auto;
   }
 
+  /* ── TOPBAR ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #1e4a2a;
+  }
+  .topbar-left { flex: 1; }
+  .topbar-right {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  #zoom-val {
+    font-size: 11px;
+    color: #7aad8a;
+    min-width: 36px;
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .tb-btn {
+    background: #0f2a18;
+    border: 1px solid #1e4a2a;
+    color: #c8e8d4;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tb-btn:hover {
+    background: #163d20;
+    border-color: #4a8c5c;
+    color: #7de8a8;
+  }
+
+  /* ── SEEDS PANEL (collapsible) ── */
+  .seeds-section {
+    overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.35s ease, margin-bottom 0.35s ease;
+    max-height: 300px;
+    opacity: 1;
+    margin-bottom: 28px;
+  }
+  .seeds-section.hidden {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+  }
+
   /* ── INSTRUCTIONS ── */
   .instructions {
     margin-top: 20px;
@@ -335,20 +383,22 @@
 </head>
 <body>
 
-<div class="page-header">
-  <div>
+<div class="topbar">
+  <div class="topbar-left">
     <div class="page-title">Italy Major 2026</div>
-    <div class="page-sub">Men's Draw — Rome, ITA</div>
+    <div class="page-sub">Men's Draw — Rome, ITA &nbsp;·&nbsp; 31 May – 7 Jun 2026 &nbsp;·&nbsp; €1,044,849</div>
   </div>
-  <div class="tournament-info">
-    31 May – 7 Jun 2026<br>
-    Prize money: €1,044,849<br>
-    Premier Padel Tour
+  <div class="topbar-right">
+    <button class="tb-btn" onclick="zoomBracket(-0.1)">−</button>
+    <span id="zoom-val">100%</span>
+    <button class="tb-btn" onclick="zoomBracket(0.1)">+</button>
+    <button class="tb-btn" onclick="resetAll()">↺ Reset</button>
+    <button class="tb-btn" id="seeds-toggle-btn" onclick="toggleSeeds()">▲ Seeds</button>
   </div>
 </div>
 
 <!-- SEEDS -->
-<div class="seeds-section">
+<div class="seeds-section" id="seeds-panel">
   <div class="section-label">Seeded teams — points &amp; gap to rank above</div>
   <div class="seeds-grid" id="seeds-grid"></div>
 </div>
@@ -396,9 +446,18 @@ const R16 = [
 
 // state[round][matchIdx] = null | 't1' | 't2'
 // round 0 = R16 (8 matches), round 1 = QF (4), round 2 = SF (2), round 3 = F (1)
+// R16 results pre-populated from draw PDF:
+//   0: Tapia/Coello [1]       t1 bt Gala/Jensen Sirvent
+//   1: Esbri/Ruiz Granados[11]t1 bt Garrido/Bergamini [8]
+//   2: Di Nenno/Navarro [6]   t1 bt Alonso/Goni Lacabe [10]
+//   3: Gonzalez/Campagnolo[9] t1 bt Yanguas/Stupaczuk [3]
+//   4: Lebron/Augsburger [4]  t1 bt Aguirre/Arroyo [12]
+//   5: Sanz/Nieto Ruiz [5]    t2 bt Arce/Tello [15]
+//   6: Collado/Hernandez       t1 bt Bautista/Jofre [14]
+//   7: Galan/Chingotto [2]    t2 bt Barahona/Alfonso [16]
 const state = {
   winners: [
-    [null,null,null,null,null,null,null,null],
+    ['t1','t1','t1','t1','t1','t2','t1','t2'],
     [null,null,null,null],
     [null,null],
     [null],
@@ -456,19 +515,27 @@ function buildCard(round, matchIdx) {
   const card = document.createElement('div');
   card.className = 'match-card';
 
-  // Court/time badge — R16 only
-  if (round === 0) {
-    const m = R16[matchIdx];
-    const courtNames = { central:'Campo Centrale', pietrangeli:'Pietrangeli', campo6:'Campo 6' };
-    const courtClasses = { central:'court-central', pietrangeli:'court-pietrangeli', campo6:'court-campo6' };
+  // QF schedule — matchIdx 0-3
+  const QF_SCHEDULE = [
+    { court:'central',      time:'Not before 6:30 PM'  },
+    { court:'central',      time:'Not before 8:00 PM'  },
+    { court:'pietrangeli',  time:'Not before 2:00 PM'  },
+    { court:'central',      time:'Not before 11:30 AM' },
+  ];
+
+  const courtNames  = { central:'Campo Centrale', pietrangeli:'Pietrangeli', campo6:'Campo 6' };
+  const courtClasses = { central:'court-central', pietrangeli:'court-pietrangeli', campo6:'court-campo6' };
+
+  const scheduleData = round === 0 ? R16[matchIdx] : (round === 1 ? QF_SCHEDULE[matchIdx] : null);
+  if (scheduleData) {
     const meta = document.createElement('div');
     meta.className = 'match-meta';
     const badge = document.createElement('span');
-    badge.className = 'court-badge ' + (courtClasses[m.court] || '');
-    badge.textContent = courtNames[m.court] || m.court;
+    badge.className = 'court-badge ' + (courtClasses[scheduleData.court] || '');
+    badge.textContent = courtNames[scheduleData.court] || scheduleData.court;
     const timeEl = document.createElement('span');
     timeEl.className = 'match-time';
-    timeEl.textContent = m.time;
+    timeEl.textContent = scheduleData.time;
     meta.appendChild(badge);
     meta.appendChild(timeEl);
     card.appendChild(meta);
@@ -633,6 +700,34 @@ function renderSeeds() {
 
 renderSeeds();
 render();
+
+/* ── ZOOM ── */
+let zoomLevel = 1.0;
+function zoomBracket(delta) {
+  zoomLevel = Math.max(0.5, Math.min(1.8, zoomLevel + delta));
+  const bo = document.getElementById('bracket');
+  bo.style.transform = 'scale(' + zoomLevel + ')';
+  bo.style.transformOrigin = 'top left';
+  bo.style.width = Math.round(100 / zoomLevel) + '%';
+  document.getElementById('zoom-val').textContent = Math.round(zoomLevel * 100) + '%';
+}
+
+/* ── SEEDS TOGGLE ── */
+let seedsVisible = true;
+function toggleSeeds() {
+  seedsVisible = !seedsVisible;
+  const panel = document.getElementById('seeds-panel');
+  panel.classList.toggle('hidden', !seedsVisible);
+  document.getElementById('seeds-toggle-btn').textContent = seedsVisible ? '▲ Seeds' : '▼ Seeds';
+}
+
+/* ── RESET ── */
+function resetAll() {
+  state.winners[1] = [null,null,null,null];
+  state.winners[2] = [null,null];
+  state.winners[3] = [null];
+  render();
+}
 </script>
 </body>
 </html>
