@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Italy Major 2026 — Men's Draw</title>
+<title>Italy Major 2026 — Women's Draw</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -11,42 +11,21 @@
 
   body {
     font-family: 'Barlow', sans-serif;
-    background: #0a1a0f;
-    color: #e8f5ec;
+    background: #0a0a18;
+    color: #e8e4f8;
     min-height: 100vh;
     padding: 24px 20px 40px;
-  }
-
-  /* ── HEADER (replaced by topbar) ── */
-  .page-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
-    color: #f5c842;
-    letter-spacing: 0.04em;
-  }
-  .page-sub {
-    font-size: 13px;
-    color: #7aad8a;
-    margin-top: 3px;
-  }
-  .tournament-info {
-    text-align: right;
-    font-size: 12px;
-    color: #7aad8a;
-    line-height: 1.6;
   }
 
   /* ── SEEDS TABLE ── */
   .section-label {
     font-size: 11px;
     font-weight: 500;
-    color: #7aad8a;
+    color: #9890c0;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-bottom: 10px;
   }
-  .seeds-section { margin-bottom: 28px; }
 
   .seeds-grid {
     display: grid;
@@ -55,21 +34,21 @@
   }
 
   .seed-card {
-    background: #0f2a18;
-    border: 1px solid #1e4a2a;
+    background: #15152e;
+    border: 1px solid #242448;
     border-radius: 8px;
     padding: 9px 7px;
     text-align: center;
   }
   .seed-rank {
     font-size: 10px;
-    color: #4a8c5c;
+    color: #5c5680;
     font-weight: 500;
     margin-bottom: 3px;
   }
   .seed-name {
     font-size: 10.5px;
-    color: #c8e8d4;
+    color: #c8c0e8;
     font-weight: 500;
     line-height: 1.3;
     min-height: 27px;
@@ -79,7 +58,7 @@
   }
   .seed-pts {
     font-size: 13px;
-    color: #e8f5ec;
+    color: #e8e4f8;
     font-weight: 600;
     margin-top: 5px;
     font-family: 'Barlow Condensed', sans-serif;
@@ -96,23 +75,20 @@
     background: rgba(245,200,66,0.12);
   }
   .seed-diff.top {
-    color: #4db87a;
-    background: rgba(77,184,122,0.12);
+    color: #f5c842;
+    background: rgba(245,200,66,0.18);
     font-size: 9px;
   }
 
   /* ── BRACKET ── */
-  .bracket-section { }
   .bracket-outer {
     display: flex;
     align-items: stretch;
     gap: 0;
     width: 100%;
-    overflow-x: auto;
     padding-bottom: 8px;
   }
 
-  /* Each half is a flex row of round columns */
   .half {
     flex: 1;
     display: flex;
@@ -134,7 +110,7 @@
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 11px;
     font-weight: 600;
-    color: #4a8c5c;
+    color: #7c5cbf;
     text-align: center;
     padding: 0 4px 8px;
     letter-spacing: 0.08em;
@@ -157,16 +133,14 @@
   }
 
   .match-card {
-    background: #0f2a18;
-    border: 1px solid #1e4a2a;
+    background: #15152e;
+    border: 1px solid #242448;
     border-radius: 8px;
     overflow: hidden;
     width: 100%;
     transition: border-color 0.2s;
   }
-  .match-card:hover {
-    border-color: #2a6a3a;
-  }
+  .match-card:hover { border-color: #3a3470; }
 
   .team-row {
     display: flex;
@@ -178,40 +152,50 @@
     min-height: 33px;
     cursor: pointer;
     transition: background 0.15s;
-    color: #c8e8d4;
+    color: #c8c0e8;
     user-select: none;
   }
-  .team-row:hover { background: rgba(255,255,255,0.05); }
-  .team-row + .team-row { border-top: 1px solid #1a3a22; }
+  .team-row:hover { background: rgba(180,160,255,0.07); }
+  .team-row + .team-row { border-top: 1px solid #1e1c3a; }
 
   .team-row.winner {
-    background: #163d20;
-    color: #7de8a8;
+    background: #1e163d;
+    color: #c0a8ff;
     font-weight: 500;
   }
-  .team-row.winner:hover { background: #1a4a26; }
+  .team-row.winner:hover { background: #251d4a; }
+
+  .team-row.locked { cursor: default; }
+  .team-row.locked:hover { background: transparent; }
+  .team-row.winner.locked:hover { background: #1e163d; }
+
+  .team-row.eliminated {
+    opacity: 0.38;
+    cursor: default;
+  }
+  .team-row.eliminated:hover { background: transparent; }
 
   .team-seed {
     font-size: 9px;
     font-weight: 600;
-    color: #4a8c5c;
+    color: #5c5680;
     min-width: 14px;
     text-align: right;
     font-family: 'Barlow Condensed', sans-serif;
   }
-  .team-row.winner .team-seed { color: #4db87a; }
+  .team-row.winner .team-seed { color: #9b7de0; }
 
   .team-name { flex: 1; word-break: break-word; }
 
   .team-check {
     font-size: 10px;
-    color: #4db87a;
+    color: #9b7de0;
     margin-left: auto;
     flex-shrink: 0;
   }
 
   .tbd {
-    color: #2d5c3a;
+    color: #3d395c;
     font-style: italic;
     font-size: 10px;
   }
@@ -231,15 +215,15 @@
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 11px;
     font-weight: 600;
-    color: #4a8c5c;
+    color: #7c5cbf;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     margin-bottom: 8px;
     text-align: center;
   }
   .final-card {
-    background: #0f2a18;
-    border: 1px solid #2a6a3a;
+    background: #15152e;
+    border: 1px solid #3a3470;
     border-radius: 8px;
     width: 100%;
     overflow: hidden;
@@ -249,8 +233,7 @@
     align-items: center;
     gap: 6px;
     padding: 7px 10px;
-    font-size: 11px;
-    color: #7de8a8;
+    color: #c0a8ff;
     font-weight: 500;
     min-height: 35px;
     cursor: pointer;
@@ -259,11 +242,11 @@
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 12px;
   }
-  .final-team:hover { background: rgba(255,255,255,0.05); }
-  .final-team + .final-team { border-top: 1px solid #1e4a2a; }
+  .final-team:hover { background: rgba(180,160,255,0.07); }
+  .final-team + .final-team { border-top: 1px solid #242448; }
 
   .champion-box {
-    background: linear-gradient(145deg, #1a3a10 0%, #0f2a18 100%);
+    background: linear-gradient(145deg, #1e1640 0%, #15152e 100%);
     border: 1.5px solid #C9971A;
     border-radius: 10px;
     padding: 14px 12px;
@@ -292,8 +275,8 @@
     align-items: center;
     gap: 5px;
     padding: 4px 8px 3px;
-    border-bottom: 1px solid #1a3a22;
-    background: #0c2214;
+    border-bottom: 1px solid #1e1c3a;
+    background: #0f0f22;
   }
   .court-badge {
     font-family: 'Barlow Condensed', sans-serif;
@@ -305,12 +288,12 @@
     border-radius: 3px;
     flex-shrink: 0;
   }
-  .court-central { background: rgba(245,200,66,0.18); color: #f5c842; }
-  .court-pietrangeli { background: rgba(77,138,184,0.18); color: #7ab8e8; }
-  .court-campo6 { background: rgba(184,77,138,0.18); color: #e87ab8; }
+  .court-central    { background: rgba(245,200,66,0.15);  color: #f5c842; }
+  .court-pietrangeli{ background: rgba(91,154,239,0.15);  color: #7ab8e8; }
+  .court-campo6     { background: rgba(224,96,176,0.15);  color: #e060b0; }
   .match-time {
     font-size: 10px;
-    color: #7aad8a;
+    color: #9890c0;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 500;
     margin-left: auto;
@@ -322,9 +305,21 @@
     align-items: center;
     margin-bottom: 24px;
     padding-bottom: 16px;
-    border-bottom: 1px solid #1e4a2a;
+    border-bottom: 1px solid #242448;
   }
   .topbar-left { flex: 1; }
+  .page-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #f5c842;
+    letter-spacing: 0.04em;
+  }
+  .page-sub {
+    font-size: 13px;
+    color: #9890c0;
+    margin-top: 3px;
+  }
   .topbar-right {
     margin-left: auto;
     display: flex;
@@ -333,15 +328,15 @@
   }
   #zoom-val {
     font-size: 11px;
-    color: #7aad8a;
+    color: #9890c0;
     min-width: 36px;
     text-align: center;
     font-family: 'Barlow Condensed', sans-serif;
   }
   .tb-btn {
-    background: #0f2a18;
-    border: 1px solid #1e4a2a;
-    color: #c8e8d4;
+    background: #15152e;
+    border: 1px solid #242448;
+    color: #c8c0e8;
     border-radius: 6px;
     padding: 5px 12px;
     font-family: 'Barlow Condensed', sans-serif;
@@ -353,9 +348,9 @@
     white-space: nowrap;
   }
   .tb-btn:hover {
-    background: #163d20;
-    border-color: #4a8c5c;
-    color: #7de8a8;
+    background: #1e1c3a;
+    border-color: #7c5cbf;
+    color: #c0a8ff;
   }
 
   /* ── SEEDS PANEL (collapsible) ── */
@@ -376,7 +371,7 @@
   .instructions {
     margin-top: 20px;
     font-size: 11px;
-    color: #4a8c5c;
+    color: #5c5680;
     text-align: center;
   }
 </style>
@@ -386,7 +381,7 @@
 <div class="topbar">
   <div class="topbar-left">
     <div class="page-title">Italy Major 2026</div>
-    <div class="page-sub">Men's Draw — Rome, ITA &nbsp;·&nbsp; 31 May – 7 Jun 2026 &nbsp;·&nbsp; €1,044,849</div>
+    <div class="page-sub">Women's Draw — Rome, ITA &nbsp;·&nbsp; 31 May – 7 Jun 2026 &nbsp;·&nbsp; €1,044,849</div>
   </div>
   <div class="topbar-right">
     <button class="tb-btn" onclick="zoomBracket(-0.1)">−</button>
@@ -405,65 +400,77 @@
 
 <!-- BRACKET -->
 <div class="bracket-section">
-  <div class="section-label">Interactive bracket — click a team to advance them</div>
+  <div class="section-label">Interactive bracket — click a team to advance them · locked rounds show completed results</div>
   <div class="bracket-outer" id="bracket"></div>
 </div>
 
-<div class="instructions">Click any team to advance · Click the winning team again to undo</div>
+<div class="instructions">Click any team in the Semifinals to advance · Click the winning team again to undo</div>
 
 <script>
 const SEEDS = [
-  { rank:1,  team:'Tapia / Coello',         pts:42218 },
-  { rank:2,  team:'Galán / Chingotto',       pts:36714 },
-  { rank:3,  team:'Yanguas / Stupaczuk',     pts:13894 },
-  { rank:4,  team:'Lebrón / Augsburger',     pts:13797 },
-  { rank:5,  team:'Sanz / Nieto Ruiz',       pts:11296 },
-  { rank:6,  team:'Di Nenno / Navarro',      pts:11291 },
-  { rank:7,  team:'Leal / Guerrero',         pts:8881  },
-  { rank:8,  team:'Garrido / Bergamini',     pts:7266  },
-  { rank:9,  team:'González / Campagnolo',   pts:6851  },
-  { rank:10, team:'Alonso / Goñi Lacabe',    pts:4922  },
-  { rank:11, team:'Esbri / Ruiz Granados',   pts:4914  },
-  { rank:12, team:'Aguirre / Arroyo',        pts:4664  },
-  { rank:13, team:'García / Jiménez',        pts:4564  },
-  { rank:14, team:'Bautista / Jofre',        pts:4543  },
-  { rank:15, team:'Arce / Tello',            pts:4466  },
-  { rank:16, team:'Barahona / Alfonso',      pts:4359  },
+  { rank:1,  team:'Triay Pons / Brea Senesi',          pts:36018 },
+  { rank:2,  team:'Josemaria Martin / Gonzalez Fern.', pts:30751 },
+  { rank:3,  team:'Sanchez Fallada / Ustero Prieto',   pts:21531 },
+  { rank:4,  team:'Fernandez Sanchez / Araujo',        pts:19461 },
+  { rank:5,  team:'Icardo Alcorisa / Jensen',          pts:12109 },
+  { rank:6,  team:'Ortega Gallego / Calvo',            pts:11176 },
+  { rank:7,  team:'Salazar Bengoechea / Alonso',       pts:10058 },
+  { rank:8,  team:'Guinart España / Virseda',          pts:8288  },
+  { rank:9,  team:'Caldera Sanchez / Goenaga Garcia',  pts:7404  },
+  { rank:10, team:'Osoro Ulrich / Iglesias Segador',   pts:7031  },
+  { rank:11, team:'Fassio Goyeneche / Eugenio Barrera',pts:5154  },
+  { rank:12, team:'Orsi / Llaguno Zielinski',          pts:4856  },
+  { rank:13, team:'Rufo Ortiz / Castello Lopez',       pts:4664  },
+  { rank:14, team:'Barrera De La Fuente / Velasco',    pts:4156  },
+  { rank:15, team:'Sainz Pelegri / Montes Cabruja',    pts:4154  },
+  { rank:16, team:'Sharifova / Collombon',             pts:3518  },
 ];
 
 // R16 matchups — 0-3 = left/top half, 4-7 = right/bottom half
-// court: 'central' | 'pietrangeli' | 'campo6'
+// w: 't1' | 't2' — completed result, locks the card
 const R16 = [
-  // TOP HALF: matches 0+1 feed QF0 (Tapia vs Garrido), matches 2+3 feed QF1 (Di Nenno vs González)
-  { t1:{name:'Tapia / Coello',          seed:1},  t2:{name:'Gala / Jensen Sirvent',     seed:null}, court:'central',      time:'Not before 6:30 PM' },
-  { t1:{name:'Esbri / Ruiz Granados',   seed:11}, t2:{name:'Garrido / Bergamini',       seed:8},    court:'pietrangeli',  time:'Not before 6:30 PM' },
-  { t1:{name:'Di Nenno / Navarro',      seed:6},  t2:{name:'Alonso / Goñi Lacabe',      seed:10},   court:'pietrangeli',  time:'Not before 8:00 PM' },
-  { t1:{name:'González / Campagnolo',   seed:9},  t2:{name:'Yanguas / Stupaczuk',       seed:3},    court:'central',      time:'Not before 8:00 PM' },
-  { t1:{name:'Lebrón / Augsburger',     seed:4},  t2:{name:'Aguirre / Arroyo',          seed:12},   court:'pietrangeli',   time:'Not before 3:00 PM' },
-  { t1:{name:'Arce / Tello',            seed:15}, t2:{name:'Sanz / Nieto Ruiz',         seed:5},    court:'campo6',        time:'Not before 1:30 PM' },
-  { t1:{name:'Collado / Hernández',     seed:null},t2:{name:'Bautista / Jofre',         seed:14},   court:'campo6',        time:'Not before 3:00 PM' },
-  { t1:{name:'Barahona / Alfonso',      seed:16}, t2:{name:'Galán / Chingotto',         seed:2},    court:'central',       time:'Not before 1:30 PM' },
+  // TOP HALF
+  { t1:{name:'Triay Pons / Brea Senesi',     seed:1},  t2:{name:'Escacena / Martinez Fortun',  seed:null}, w:'t1', court:'central',      time:'R16 · 12:00 PM' },
+  { t1:{name:'Sharifova / Collombon',        seed:16}, t2:{name:'Icardo Alcorisa / Jensen',    seed:5},    w:'t2', court:'campo6',       time:'R16 · 12:00 PM' },
+  { t1:{name:'Rodriguez Camacho / Dal Pozzo',seed:null},t2:{name:'Orsi / Llaguno Zielinski',   seed:12},   w:'t1', court:'pietrangeli',  time:'R16 · 1:30 PM'  },
+  { t1:{name:'Caldera Sanchez / Goenaga',    seed:9},  t2:{name:'Fernandez Sanchez / Araujo',  seed:4},    w:'t2', court:'pietrangeli',  time:'R16 · 12:00 PM' },
+  // BOTTOM HALF
+  { t1:{name:'Sanchez Fallada / Ustero',     seed:3},  t2:{name:'Osoro Ulrich / Iglesias',     seed:10},   w:'t1', court:'central',      time:'R16 · 5:00 PM'  },
+  { t1:{name:'Canovas Paredes / Rodriguez',  seed:null},t2:{name:'Guinart España / Virseda',   seed:8},    w:'t1', court:'pietrangeli',  time:'R16 · 3:00 PM'  },
+  { t1:{name:'Ortega Gallego / Calvo',       seed:6},  t2:{name:'Sainz Pelegri / Montes',      seed:15},   w:'t1', court:'pietrangeli',  time:'R16 · 5:00 PM'  },
+  { t1:{name:'Fassio Goyeneche / Eugenio',   seed:11}, t2:{name:'Josemaria Martin / Gonzalez', seed:2},    w:'t2', court:'central',      time:'R16 · 3:00 PM'  },
 ];
 
-// state[round][matchIdx] = null | 't1' | 't2'
-// round 0 = R16 (8 matches), round 1 = QF (4), round 2 = SF (2), round 3 = F (1)
-// R16 results pre-populated from draw PDF:
-//   0: Tapia/Coello [1]       t1 bt Gala/Jensen Sirvent
-//   1: Esbri/Ruiz Granados[11]t1 bt Garrido/Bergamini [8]
-//   2: Di Nenno/Navarro [6]   t1 bt Alonso/Goni Lacabe [10]
-//   3: Gonzalez/Campagnolo[9] t1 bt Yanguas/Stupaczuk [3]
-//   4: Lebron/Augsburger [4]  t1 bt Aguirre/Arroyo [12]
-//   5: Sanz/Nieto Ruiz [5]    t2 bt Arce/Tello [15]
-//   6: Collado/Hernandez       t1 bt Bautista/Jofre [14]
-//   7: Galan/Chingotto [2]    t2 bt Barahona/Alfonso [16]
+// QF matchups — derived from R16 winners, completed & locked
+// w: 't1' | 't2'
+const QF_RESULTS = [
+  // TOP HALF — feeds left SF
+  { w:'t1', court:'central',      time:'QF · 10:00 AM'   },  // [1] Triay/Brea Senesi def [5] Icardo/Jensen
+  { w:'t1', court:'pietrangeli',  time:'QF · 12:00 PM'   },  // Rodriguez Camacho/Dal Pozzo def [4] Fernandez/Araujo
+  // BOTTOM HALF — feeds right SF
+  { w:'t1', court:'central',      time:'QF · 5:00 PM'    },  // [3] Sanchez Fallada/Ustero def Canovas/Rodriguez
+  { w:'t2', court:'central',      time:'QF · ~11:30 AM'  },  // [2] Josemaria/Gonzalez def [6] Ortega/Calvo
+];
+
+// SF schedule — live & interactive
+const SF_SCHEDULE = [
+  { court:'central', time:'SF · 1:00 PM'           },  // left:  [1] Triay vs Rodriguez Camacho
+  { court:'central', time:'SF · Not before 6:00 PM' }, // right: [3] Sanchez Fallada vs [2] Josemaria
+];
+
+// ── STATE ───────────────────────────────────────────────────────────────
+// round 0 = R16 (locked), round 1 = QF (locked), round 2 = SF (live), round 3 = Final (live)
 const state = {
   winners: [
-    ['t1','t2','t1','t1','t1','t2','t1','t2'],  // R16: match1 Garrido(t2) beat Esbri
-    ['t1','t2','t1','t2'],  // QF: Tapia(t1), González(t2), Lebrón(t1), Galán(t2)
-    [null,null],
-    [null],
+    ['t1','t2','t1','t2','t1','t1','t1','t2'],  // R16 locked
+    ['t1','t1','t1','t2'],                        // QF locked
+    [null, null],                                 // SF — interactive
+    [null],                                       // Final — interactive
   ]
 };
+
+// Rounds 0 (R16) and 1 (QF) are locked — not clickable
+const LOCKED_ROUNDS = new Set([0, 1]);
 
 function getWinner(round, idx) {
   const w = state.winners[round][idx];
@@ -478,9 +485,7 @@ function getWinner(round, idx) {
 }
 
 function getTeams(round, matchIdx) {
-  if (round === 0) {
-    return { t1: R16[matchIdx].t1, t2: R16[matchIdx].t2 };
-  }
+  if (round === 0) return { t1: R16[matchIdx].t1, t2: R16[matchIdx].t2 };
   return {
     t1: getWinner(round - 1, matchIdx * 2),
     t2: getWinner(round - 1, matchIdx * 2 + 1),
@@ -498,6 +503,7 @@ function clearDownstream(round, matchIdx) {
 }
 
 function setWinner(round, matchIdx, side) {
+  if (LOCKED_ROUNDS.has(round)) return;
   if (state.winners[round][matchIdx] === side) {
     state.winners[round][matchIdx] = null;
     clearDownstream(round, matchIdx);
@@ -512,30 +518,20 @@ function setWinner(round, matchIdx, side) {
 function buildCard(round, matchIdx) {
   const { t1, t2 } = getTeams(round, matchIdx);
   const winner = state.winners[round][matchIdx];
+  const locked = LOCKED_ROUNDS.has(round);
 
   const card = document.createElement('div');
   card.className = 'match-card';
 
-  // QF schedule — matchIdx 0-3
-  const QF_SCHEDULE = [
-    { court:'central',      time:'Not before 6:30 PM'  },
-    { court:'central',      time:'Not before 8:00 PM'  },
-    { court:'pietrangeli',  time:'Not before 2:00 PM'  },
-    { court:'central',      time:'Not before 11:30 AM' },
-  ];
+  // Schedule data
+  let scheduleData = null;
+  if (round === 0) scheduleData = R16[matchIdx];
+  else if (round === 1) scheduleData = { court: QF_RESULTS[matchIdx].court, time: QF_RESULTS[matchIdx].time };
+  else if (round === 2) scheduleData = SF_SCHEDULE[matchIdx];
 
-  // SF: both men's matches on Campo Centrale
-  // SF0 (left) = Lebrón/Augsburger vs Galán/Chingotto — Not before 2:30 PM
-  // SF1 (right) = Tapia/Coello vs González/Campagnolo  — Not before 7:30 PM
-  const SF_SCHEDULE = [
-    { court:'central', time:'Not before 2:30 PM' },
-    { court:'central', time:'Not before 7:30 PM' },
-  ];
+  const courtNames   = { central:'Campo Centrale', pietrangeli:'Pietrangeli', campo6:'Campo 6' };
+  const courtClasses = { central:'court-central',  pietrangeli:'court-pietrangeli', campo6:'court-campo6' };
 
-  const courtNames  = { central:'Campo Centrale', pietrangeli:'Pietrangeli', campo6:'Campo 6' };
-  const courtClasses = { central:'court-central', pietrangeli:'court-pietrangeli', campo6:'court-campo6' };
-
-  const scheduleData = round === 0 ? R16[matchIdx] : round === 1 ? QF_SCHEDULE[matchIdx] : round === 2 ? SF_SCHEDULE[matchIdx] : null;
   if (scheduleData) {
     const meta = document.createElement('div');
     meta.className = 'match-meta';
@@ -552,7 +548,14 @@ function buildCard(round, matchIdx) {
 
   function makeRow(team, side) {
     const row = document.createElement('div');
-    row.className = 'team-row' + (winner === side ? ' winner' : '');
+    const isWinner = winner === side;
+    const isLoser  = winner && winner !== side;
+
+    let cls = 'team-row';
+    if (isWinner) cls += ' winner';
+    if (isLoser && locked) cls += ' eliminated';
+    if (locked) cls += ' locked';
+    row.className = cls;
 
     if (team) {
       const seedEl = document.createElement('span');
@@ -566,14 +569,14 @@ function buildCard(round, matchIdx) {
       row.appendChild(seedEl);
       row.appendChild(nameEl);
 
-      if (winner === side) {
+      if (isWinner) {
         const chk = document.createElement('span');
         chk.className = 'team-check';
         chk.textContent = '✓';
         row.appendChild(chk);
       }
 
-      row.addEventListener('click', () => setWinner(round, matchIdx, side));
+      if (!locked) row.addEventListener('click', () => setWinner(round, matchIdx, side));
     } else {
       const tbd = document.createElement('span');
       tbd.className = 'tbd';
@@ -584,7 +587,7 @@ function buildCard(round, matchIdx) {
   }
 
   const divider = document.createElement('div');
-  divider.style.cssText = 'height:1px; background:#1a3a22;';
+  divider.style.cssText = 'height:1px; background:#1e1c3a;';
 
   card.appendChild(makeRow(t1, 't1'));
   card.appendChild(divider);
@@ -666,7 +669,7 @@ function render() {
       if (idx === 0) {
         fc.appendChild(row);
         const div = document.createElement('div');
-        div.style.cssText = 'height:1px; background:#1e4a2a;';
+        div.style.cssText = 'height:1px; background:#242448;';
         fc.appendChild(div);
       } else {
         fc.appendChild(row);
@@ -713,11 +716,8 @@ render();
 /* ── ZOOM ── */
 let zoomLevel = 1.0;
 function zoomBracket(delta) {
-  zoomLevel = Math.max(0.5, Math.min(1.8, zoomLevel + delta));
-  const bo = document.getElementById('bracket');
-  bo.style.transform = 'scale(' + zoomLevel + ')';
-  bo.style.transformOrigin = 'top left';
-  bo.style.width = Math.round(100 / zoomLevel) + '%';
+  zoomLevel = Math.max(0.4, Math.min(1.8, zoomLevel + delta));
+  document.getElementById('bracket').style.zoom = zoomLevel;
   document.getElementById('zoom-val').textContent = Math.round(zoomLevel * 100) + '%';
 }
 
@@ -732,8 +732,7 @@ function toggleSeeds() {
 
 /* ── RESET ── */
 function resetAll() {
-  state.winners[1] = [null,null,null,null];
-  state.winners[2] = [null,null];
+  state.winners[2] = [null, null];
   state.winners[3] = [null];
   render();
 }
