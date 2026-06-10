@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valencia P1 2026 — Seedings</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0f1117;
+    --surface:   #181c26;
+    --surface2:  #1e2333;
+    --border:    rgba(255,255,255,0.08);
+    --border2:   rgba(255,255,255,0.15);
+    --text:      #f0f2f8;
+    --muted:     #8b91a8;
+    --faint:     #555c72;
+    --blue:      #4a9eff;
+    --blue-bar:  #2d6eb8;
+    --green:     #3ecf8e;
+    --green-bar: #1a9e65;
+    --amber:     #f5a623;
+    --amber-bar: #c4821a;
+    --purple:    #a78bfa;
+    --purple-bar:#6d47d9;
+    --teal:      #2dd4bf;
+    --teal-bar:  #0f9a8a;
+    --gold:      #f5c842;
+    --silver:    #b0b8c8;
+    --bronze:    #d4845a;
+    --radius:    10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+  }
+
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 0.5px solid var(--border2);
+  }
+
+  .header-left h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .header-left p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  .header-badge {
+    font-size: 11px;
+    font-weight: 500;
+    background: rgba(74,158,255,0.12);
+    color: var(--blue);
+    border: 0.5px solid rgba(74,158,255,0.25);
+    border-radius: 20px;
+    padding: 4px 10px;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .sort-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .sort-group span {
+    font-size: 11px;
+    color: var(--muted);
+    margin-right: 2px;
+  }
+
+  .sort-btn {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    background: transparent;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .sort-btn:hover { border-color: var(--border2); color: var(--text); }
+  .sort-btn.active { background: var(--surface2); border-color: var(--border2); color: var(--text); }
+
+  .legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .legend-bar {
+    width: 10px;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  .note {
+    font-size: 10px;
+    color: var(--faint);
+    margin-bottom: 14px;
+  }
+
+  .note span.active-tag {
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 13px;
+    transition: border-color 0.15s;
+  }
+
+  .card:hover { border-color: var(--border2); }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+  }
+
+  .seed-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .s1 { background: rgba(245,200,66,0.2);   color: var(--gold);   border: 0.5px solid rgba(245,200,66,0.35); }
+  .s2 { background: rgba(176,184,200,0.15); color: var(--silver); border: 0.5px solid rgba(176,184,200,0.3); }
+  .s3 { background: rgba(212,132,90,0.15);  color: var(--bronze); border: 0.5px solid rgba(212,132,90,0.3); }
+  .sn { background: var(--surface2);        color: var(--muted);  border: 0.5px solid var(--border); }
+
+  .nat {
+    font-size: 9px;
+    color: var(--faint);
+    letter-spacing: 0.02em;
+  }
+
+  .team-names {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.45;
+    margin-bottom: 9px;
+    min-height: 32px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 0.5px solid var(--border);
+    margin: 0 0 8px;
+  }
+
+  .metric { margin-bottom: 7px; }
+  .metric:last-child { margin-bottom: 0; }
+
+  .metric-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2px;
+  }
+
+  .metric-label {
+    font-size: 9px;
+    color: var(--faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .metric-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .metric-sub {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .bar-wrap {
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .bar-blue   { background: var(--blue-bar); }
+  .bar-green  { background: var(--green-bar); }
+  .bar-amber  { background: var(--amber-bar); }
+  .bar-purple { background: var(--purple-bar); }
+  .bar-teal   { background: var(--teal-bar); }
+
+  .active-pill {
+    font-size: 9px;
+    font-weight: 500;
+    background: rgba(62,207,142,0.12);
+    color: var(--green);
+    border: 0.5px solid rgba(62,207,142,0.25);
+    border-radius: 20px;
+    padding: 1px 6px;
+  }
+
+  .round-tag {
+    font-size: 9px;
+    color: var(--faint);
+  }
+
+  footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 0.5px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  footer p {
+    font-size: 10px;
+    color: var(--faint);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>Valencia P1 2026 — Seedings</h1>
+    <p>Valencia, ESP · 6–14 Jun 2026 · Prize fund €479,068</p>
+  </div>
+  <span class="header-badge">Premier Padel P1</span>
+</header>
+
+<div class="controls">
+  <div class="sort-group">
+    <span>Sort by:</span>
+    <button class="sort-btn active" id="btn-seed"       onclick="setSort('seed')">Seeding</button>
+    <button class="sort-btn"        id="btn-ranking"    onclick="setSort('ranking')">Ranking</button>
+    <button class="sort-btn"        id="btn-race"       onclick="setSort('race')">Race</button>
+    <button class="sort-btn"        id="btn-tp"         onclick="setSort('tp')">TP</button>
+    <button class="sort-btn"        id="btn-rankingtp"  onclick="setSort('rankingtp')">Ranking + TP</button>
+    <button class="sort-btn"        id="btn-racetp"     onclick="setSort('racetp')">Race + TP</button>
+  </div>
+  <div class="legend">
+    <span class="legend-item"><span class="legend-bar" style="background:var(--blue-bar)"></span>Ranking</span>
+    <span class="legend-item"><span class="legend-bar" style="background:var(--green-bar)"></span>Race</span>
+    <span class="legend-item"><span class="legend-bar" style="background:var(--amber-bar)"></span>TP</span>
+    <span class="legend-item"><span class="legend-bar" style="background:var(--purple-bar)"></span>Ranking + TP</span>
+    <span class="legend-item"><span class="legend-bar" style="background:var(--teal-bar)"></span>Race + TP</span>
+  </div>
+</div>
+
+<p class="note">TP = tournament points per team (per-player pts × 2). Ranking + TP and Race + TP bars scaled to their own maximums. <span class="active-tag">Active</span> = still competing. Results confirmed through R32.</p>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  <p>Source: Premier Padel official draw · FIP Rankings &amp; Race Rankings as of 8 Jun 2026</p>
+  <p>Generated 9 Jun 2026</p>
+</footer>
+
+<script>
+const roundPts = { R64:22, R32:45, R16:90, QF:180, SF:360, Final:600, W:1000 };
+const teamPts = v => v * 2;
+const MAX_TP = teamPts(roundPts['W']);
+
+const teams = [
+  {seed:1,  p1:"A. Coello",    p2:"A. Tapia",         nat:"ESP / ARG", ranking:42252, race:11760, round:'R32', active:true},
+  {seed:2,  p1:"A. Galán",     p2:"F. Chingotto",     nat:"ESP / ARG", ranking:34582, race:11740, round:'R32', active:true},
+  {seed:3,  p1:"M. Yanguas",   p2:"F. Stupaczuk",     nat:"ESP / ARG", ranking:13453, race:4560,  round:'R16', active:true},
+  {seed:4,  p1:"J. Lebrón",    p2:"L. Augsburger",    nat:"ESP / ARG", ranking:14221, race:6150,  round:'R32', active:true},
+  {seed:5,  p1:"J. Nieto",     p2:"J. Sanz",          nat:"ESP / ESP", ranking:10884, race:2659,  round:'R16', active:true},
+  {seed:6,  p1:"F. Navarro",   p2:"M. Di Nenno",      nat:"ESP / ARG", ranking:10749, race:2533,  round:'R16', active:true},
+  {seed:7,  p1:"J. Leal",      p2:"F. Guerrero",      nat:"ESP / ESP", ranking:7556,  race:2242,  round:'R16', active:true},
+  {seed:8,  p1:"L. Bergamini", p2:"J. Garrido",       nat:"BRA / ESP", ranking:6954,  race:2480,  round:'R32', active:true},
+  {seed:9,  p1:"J. González",  p2:"L. Campagnolo",    nat:"ESP / BRA", ranking:7417,  race:2962,  round:'R32', active:true},
+  {seed:10, p1:"J. Esbri",     p2:"A. Ruiz Granados", nat:"ESP / ESP", ranking:4866,  race:1714,  round:'R32', active:true},
+  {seed:11, p1:"E. Alonso",    p2:"A. Goñi Lacabe",   nat:"ESP / ESP", ranking:4952,  race:1962,  round:'R32', active:true},
+  {seed:12, p1:"L. Aguirre",   p2:"A. Arroyo",        nat:"ARG / ESP", ranking:4496,  race:1837,  round:'R32', active:true},
+  {seed:13, p1:"J. García",    p2:"J. Jiménez Casas", nat:"ESP / ESP", ranking:4410,  race:1821,  round:'R16', active:true},
+  {seed:14, p1:"J. Tello",     p2:"M. Arce Simó",     nat:"ARG / ARG", ranking:4588,  race:1606,  round:'R32', active:true},
+  {seed:15, p1:"I. Jofre",     p2:"J. Bautista",      nat:"UAE / ESP", ranking:4095,  race:1651,  round:'R16', active:true},
+  {seed:16, p1:"J. Barahona",  p2:"G. Alfonso",       nat:"ESP / ARG", ranking:4422,  race:1642,  round:'R32', active:true},
+];
+
+teams.forEach(t => {
+  t.tp        = teamPts(roundPts[t.round]);
+  t.rankingtp = t.ranking + t.tp;
+  t.racetp    = t.race + t.tp;
+});
+
+const maxR   = Math.max(...teams.map(t => t.ranking));
+const maxG   = Math.max(...teams.map(t => t.race));
+const maxRTP = Math.max(...teams.map(t => t.rankingtp));
+const maxGTP = Math.max(...teams.map(t => t.racetp));
+
+function badgeClass(s) {
+  return s===1 ? 's1' : s===2 ? 's2' : s===3 ? 's3' : 'sn';
+}
+
+let sort = 'seed';
+
+function setSort(s) {
+  sort = s;
+  ['seed','ranking','race','tp','rankingtp','racetp'].forEach(k => {
+    const el = document.getElementById('btn-'+k);
+    if (el) el.className = 'sort-btn' + (k===s ? ' active' : '');
+  });
+  render();
+}
+
+function render() {
+  const d = [...teams];
+  if      (sort==='ranking')   d.sort((a,b) => b.ranking   - a.ranking);
+  else if (sort==='race')      d.sort((a,b) => b.race      - a.race);
+  else if (sort==='tp')        d.sort((a,b) => b.tp        - a.tp);
+  else if (sort==='rankingtp') d.sort((a,b) => b.rankingtp - a.rankingtp);
+  else if (sort==='racetp')    d.sort((a,b) => b.racetp    - a.racetp);
+  else                         d.sort((a,b) => a.seed      - b.seed);
+
+  document.getElementById('grid').innerHTML = d.map(t => `
+    <div class="card">
+      <div class="card-top">
+        <span class="seed-badge ${badgeClass(t.seed)}">${t.seed}</span>
+        <span class="nat">${t.nat}</span>
+      </div>
+      <div class="team-names">${t.p1}<br>${t.p2}</div>
+      <hr class="divider">
+
+      <div class="metric">
+        <div class="metric-head">
+          <span class="metric-label">Ranking</span>
+          <span class="metric-value">${t.ranking.toLocaleString()}</span>
+        </div>
+        <div class="bar-wrap"><div class="bar-fill bar-blue" style="width:${Math.round(t.ranking/maxR*100)}%"></div></div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-head">
+          <span class="metric-label">Race</span>
+          <span class="metric-sub">${t.race.toLocaleString()}</span>
+        </div>
+        <div class="bar-wrap"><div class="bar-fill bar-green" style="width:${Math.round(t.race/maxG*100)}%"></div></div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-head">
+          <span class="metric-label">TP</span>
+          <div style="display:flex;align-items:center;gap:5px;">
+            <span class="metric-sub" style="color:#f0f2f8;font-weight:600;">${t.tp.toLocaleString()}</span>
+            <span class="round-tag">${t.round}</span>
+            ${t.active ? '<span class="active-pill">active</span>' : ''}
+          </div>
+        </div>
+        <div class="bar-wrap"><div class="bar-fill bar-amber" style="width:${Math.round(t.tp/MAX_TP*100)}%"></div></div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-head">
+          <span class="metric-label">Ranking + TP</span>
+          <span class="metric-sub" style="color:var(--purple);">${t.rankingtp.toLocaleString()}</span>
+        </div>
+        <div class="bar-wrap"><div class="bar-fill bar-purple" style="width:${Math.round(t.rankingtp/maxRTP*100)}%"></div></div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-head">
+          <span class="metric-label">Race + TP</span>
+          <span class="metric-sub" style="color:var(--teal);">${t.racetp.toLocaleString()}</span>
+        </div>
+        <div class="bar-wrap"><div class="bar-fill bar-teal" style="width:${Math.round(t.racetp/maxGTP*100)}%"></div></div>
+      </div>
+
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>
