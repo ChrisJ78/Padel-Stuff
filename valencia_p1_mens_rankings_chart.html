@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valencia P1 2026 — Rankings Chart</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:#0f1117; --surface:#181c26; --surface2:#1e2333;
+    --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.15);
+    --text:#f0f2f8; --muted:#8b91a8; --faint:#555c72;
+    --blue:#4a9eff; --blue-bar:#2d6eb8;
+    --green:#3ecf8e; --green-bar:#1a9e65;
+    --amber:#f5a623; --amber-bar:#c4821a;
+    --purple:#a78bfa; --purple-bar:#6d47d9;
+    --teal:#2dd4bf; --teal-bar:#0f9a8a;
+    --red:#f87171;
+    --radius:10px; --radius-sm:6px;
+  }
+  body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif; font-size:14px; line-height:1.5; min-height:100vh; padding:32px 24px 48px; }
+  header { display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:28px; padding-bottom:20px; border-bottom:0.5px solid var(--border2); }
+  .header-left h1 { font-size:22px; font-weight:600; color:var(--text); letter-spacing:-0.3px; }
+  .header-left p  { font-size:12px; color:var(--muted); margin-top:3px; }
+  .header-badge { font-size:11px; font-weight:500; background:rgba(74,158,255,0.12); color:var(--blue); border:0.5px solid rgba(74,158,255,0.25); border-radius:20px; padding:4px 10px; }
+  .controls { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+  .controls span { font-size:11px; color:var(--muted); margin-right:2px; }
+  .sort-btn { font-size:11px; font-weight:500; color:var(--muted); background:transparent; border:0.5px solid var(--border); border-radius:var(--radius-sm); padding:4px 10px; cursor:pointer; transition:all 0.15s; }
+  .sort-btn:hover  { border-color:var(--border2); color:var(--text); }
+  .sort-btn.active { background:var(--surface2); border-color:var(--border2); color:var(--text); }
+  .col-headers { display:flex; align-items:center; gap:0; margin-bottom:6px; }
+  .name-col { width:168px; flex-shrink:0; display:flex; align-items:center; gap:4px; padding-left:2px; }
+  .col-label { font-size:9px; color:var(--faint); text-transform:uppercase; letter-spacing:0.05em; }
+  .bars-col { display:grid; grid-template-columns:repeat(5,1fr); gap:4px; flex:1; }
+  .bar-col-label { font-size:10px; color:var(--faint); text-transform:uppercase; letter-spacing:0.04em; padding:0 4px; }
+  .row { display:flex; align-items:center; gap:0; margin-bottom:4px; }
+  .name-cell { width:168px; flex-shrink:0; display:flex; align-items:center; gap:4px; }
+  .badge { display:inline-flex; align-items:center; justify-content:center; width:22px; height:16px; border-radius:3px; font-size:10px; font-weight:500; flex-shrink:0; }
+  .badge-seed     { background:rgba(128,128,128,0.15); color:var(--muted); border:0.5px solid var(--border); }
+  .badge-rank     { background:rgba(74,158,255,0.12); color:var(--blue); border:0.5px solid rgba(74,158,255,0.25); }
+  .badge-same     { background:rgba(62,207,142,0.12); color:var(--green); border:0.5px solid rgba(62,207,142,0.3); }
+  .badge-empty    { width:22px; }
+  .arrow { font-size:9px; line-height:1; width:28px; flex-shrink:0; text-align:left; }
+  .arrow-up   { color:var(--green); }
+  .arrow-down { color:var(--red); }
+  .team-name { font-size:11px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bars-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:4px; flex:1; }
+  .bar-cell { display:flex; flex-direction:column; justify-content:center; padding:0 4px; }
+  .bar-track { height:11px; background:rgba(128,128,128,0.12); border-radius:2px; overflow:hidden; }
+  .bar-fill  { height:100%; border-radius:2px; transition:width 0.35s ease; }
+  .bar-val   { font-size:10px; margin-top:2px; }
+  .legend { display:flex; gap:14px; flex-wrap:wrap; margin-top:14px; padding-top:12px; border-top:0.5px solid var(--border); align-items:center; }
+  .legend-item { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--muted); }
+  .legend-swatch { width:10px; height:10px; border-radius:2px; }
+  .legend-badges { display:flex; align-items:center; gap:10px; margin-left:8px; }
+  .legend-badge-item { display:flex; align-items:center; gap:4px; font-size:10px; color:var(--muted); }
+  footer { margin-top:24px; padding-top:16px; border-top:0.5px solid var(--border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer p { font-size:10px; color:var(--faint); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>Valencia P1 2026 — Rankings</h1>
+    <p>Valencia, ESP · 6–14 Jun 2026 · Prize fund €479,068</p>
+  </div>
+  <span class="header-badge">Premier Padel P1</span>
+</header>
+
+<div class="controls">
+  <span>Sort by:</span>
+  <button class="sort-btn active" id="btn-seed"      onclick="setSort('seed')">Seeding</button>
+  <button class="sort-btn"        id="btn-ranking"   onclick="setSort('ranking')">Ranking</button>
+  <button class="sort-btn"        id="btn-race"      onclick="setSort('race')">Race</button>
+  <button class="sort-btn"        id="btn-tp"        onclick="setSort('tp')">TP</button>
+  <button class="sort-btn"        id="btn-rankingtp" onclick="setSort('rankingtp')">Ranking+TP</button>
+  <button class="sort-btn"        id="btn-racetp"    onclick="setSort('racetp')">Race+TP</button>
+</div>
+
+<div class="col-headers">
+  <div class="name-col">
+    <span class="col-label" style="width:22px;text-align:center;">Seed</span>
+    <span class="col-label" style="width:22px;text-align:center;" id="rank-header"></span>
+    <span style="width:28px;"></span>
+  </div>
+  <div class="bars-col">
+    <div class="bar-col-label">Ranking</div>
+    <div class="bar-col-label">Race</div>
+    <div class="bar-col-label">TP</div>
+    <div class="bar-col-label">Ranking+TP</div>
+    <div class="bar-col-label">Race+TP</div>
+  </div>
+</div>
+
+<div id="rows"></div>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-swatch" style="background:#2d6eb8;"></span>Ranking</div>
+  <div class="legend-item"><span class="legend-swatch" style="background:#1a9e65;"></span>Race</div>
+  <div class="legend-item"><span class="legend-swatch" style="background:#c4821a;"></span>TP</div>
+  <div class="legend-item"><span class="legend-swatch" style="background:#6d47d9;"></span>Ranking+TP</div>
+  <div class="legend-item"><span class="legend-swatch" style="background:#0f9a8a;"></span>Race+TP</div>
+  <div class="legend-badges">
+    <div class="legend-badge-item"><span class="badge badge-seed" style="display:inline-flex;">#</span>Seed</div>
+    <div class="legend-badge-item"><span class="badge badge-rank" style="display:inline-flex;">#</span>Sort rank</div>
+    <div class="legend-badge-item"><span class="badge badge-same" style="display:inline-flex;">#</span>Unchanged</div>
+  </div>
+</div>
+
+<footer>
+  <p>Source: Premier Padel official draw · FIP Rankings &amp; Race Rankings as of 8 Jun 2026</p>
+  <p>Updated 14 Jun 2026 — SF results confirmed · Final in progress</p>
+</footer>
+
+<script>
+const roundPts = { R32:45, R16:90, QF:180, SF:360, Final:600, W:1000 };
+
+const teams = [
+  {seed:1,  name:"Coello / Tapia",        ranking:42252, race:11760, round:'Final', active:true },
+  {seed:2,  name:"Galán / Chingotto",      ranking:34582, race:11740, round:'Final', active:true },
+  {seed:3,  name:"Yanguas / Stupaczuk",    ranking:13453, race:4560,  round:'SF',    active:false},
+  {seed:4,  name:"Lebrón / Augsburger",    ranking:14221, race:6150,  round:'SF',    active:false},
+  {seed:5,  name:"Nieto / Sanz",           ranking:10884, race:2659,  round:'QF',    active:false},
+  {seed:6,  name:"Navarro / Di Nenno",     ranking:10749, race:2533,  round:'QF',    active:false},
+  {seed:7,  name:"Leal / Guerrero",        ranking:7556,  race:2242,  round:'QF',    active:false},
+  {seed:8,  name:"Bergamini / Garrido",    ranking:6954,  race:2480,  round:'R16',   active:false},
+  {seed:9,  name:"González / Campagnolo",  ranking:7417,  race:2962,  round:'R32',   active:false},
+  {seed:10, name:"Esbri / Ruiz Granados",  ranking:4866,  race:1714,  round:'R32',   active:false},
+  {seed:11, name:"Alonso / Goñi Lacabe",   ranking:4952,  race:1962,  round:'R32',   active:false},
+  {seed:12, name:"Aguirre / Arroyo",       ranking:4496,  race:1837,  round:'R32',   active:false},
+  {seed:13, name:"García / Jiménez Casas", ranking:4410,  race:1821,  round:'R16',   active:false},
+  {seed:14, name:"Tello / Arce Simó",      ranking:4588,  race:1606,  round:'QF',    active:false},
+  {seed:15, name:"Jofre / Bautista",       ranking:4095,  race:1651,  round:'R16',   active:false},
+  {seed:16, name:"Barahona / Alfonso",     ranking:4422,  race:1642,  round:'R32',   active:false},
+];
+
+teams.forEach(t => {
+  t.tp        = roundPts[t.round] * 2;
+  t.rankingtp = t.ranking + t.tp;
+  t.racetp    = t.race    + t.tp;
+});
+
+const maxR   = Math.max(...teams.map(t => t.ranking));
+const maxG   = Math.max(...teams.map(t => t.race));
+const maxTP  = Math.max(...teams.map(t => t.tp));
+const maxRTP = Math.max(...teams.map(t => t.rankingtp));
+const maxGTP = Math.max(...teams.map(t => t.racetp));
+
+function bar(val, max, color, highlight) {
+  const pct = Math.round(val / max * 100);
+  return `<div class="bar-cell">
+    <div class="bar-track">
+      <div class="bar-fill" style="width:${pct}%;background:${color};opacity:${highlight?1:0.35};"></div>
+    </div>
+    <div class="bar-val" style="color:${highlight?'var(--text)':'var(--faint)'};font-weight:${highlight?500:400};">${val.toLocaleString()}</div>
+  </div>`;
+}
+
+function rowOpacity(t) {
+  if (t.active)         return 1;
+  if (t.round==='SF')   return 0.9;
+  if (t.round==='QF')   return 0.78;
+  return 0.55;
+}
+
+let sort = 'seed';
+
+function setSort(s) {
+  sort = s;
+  ['seed','ranking','race','tp','rankingtp','racetp'].forEach(k => {
+    const el = document.getElementById('btn-'+k);
+    if (el) el.className = 'sort-btn' + (k===s ? ' active' : '');
+  });
+  document.getElementById('rank-header').textContent = s === 'seed' ? '' : 'Rank';
+  render();
+}
+
+function render() {
+  const d = [...teams];
+  if      (sort==='ranking')   d.sort((a,b) => b.ranking   - a.ranking);
+  else if (sort==='race')      d.sort((a,b) => b.race      - a.race);
+  else if (sort==='tp')        d.sort((a,b) => b.tp        - a.tp);
+  else if (sort==='rankingtp') d.sort((a,b) => b.rankingtp - a.rankingtp);
+  else if (sort==='racetp')    d.sort((a,b) => b.racetp    - a.racetp);
+  else                         d.sort((a,b) => a.seed      - b.seed);
+
+  const isSeed = sort === 'seed';
+  const hlR   = sort==='ranking'   || isSeed;
+  const hlG   = sort==='race'      || isSeed;
+  const hlTP  = sort==='tp'        || isSeed;
+  const hlRTP = sort==='rankingtp' || isSeed;
+  const hlGTP = sort==='racetp'    || isSeed;
+
+  document.getElementById('rows').innerHTML = d.map((t, i) => {
+    const sortRank = i + 1;
+    const same = t.seed === sortRank;
+    const diff = t.seed - sortRank;
+
+    const seedBadge = `<span class="badge badge-seed">${t.seed}</span>`;
+
+    const rankBadge = isSeed
+      ? `<span class="badge-empty"></span>`
+      : `<span class="badge ${same ? 'badge-same' : 'badge-rank'}">${sortRank}</span>`;
+
+    const arrow = (!isSeed && !same)
+      ? `<span class="arrow ${diff>0?'arrow-up':'arrow-down'}">${diff>0?'▲':'▼'}${Math.abs(diff)}</span>`
+      : `<span style="width:28px;flex-shrink:0;"></span>`;
+
+    return `<div class="row" style="opacity:${rowOpacity(t)};">
+      <div class="name-cell">
+        ${seedBadge}
+        ${rankBadge}
+        ${arrow}
+        <span class="team-name" title="${t.name}">${t.name}</span>
+      </div>
+      <div class="bars-grid">
+        ${bar(t.ranking,   maxR,   '#2d6eb8', hlR)}
+        ${bar(t.race,      maxG,   '#1a9e65', hlG)}
+        ${bar(t.tp,        maxTP,  '#c4821a', hlTP)}
+        ${bar(t.rankingtp, maxRTP, '#6d47d9', hlRTP)}
+        ${bar(t.racetp,    maxGTP, '#0f9a8a', hlGTP)}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+render();
+</script>
+</body>
+</html>
