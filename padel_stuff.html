@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premier Padel 2026 — Tools & Draws</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #080d18;
+    --surface:   #0e1525;
+    --border:    #1c2a42;
+    --accent:    #0099ee;
+    --accent2:   #7c3aed;
+    --gold:      #f5a623;
+    --text:      #e8edf5;
+    --muted:     #6b7a96;
+    --card-hover:#141f35;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    padding: 64px 24px 56px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  /* Court-line grid — the signature element */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.5;
+    mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, black 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, black 40%, transparent 100%);
+  }
+
+  /* Soft glow behind the wordmark */
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -40px; left: 50%; transform: translateX(-50%);
+    width: 520px; height: 260px;
+    background: radial-gradient(ellipse, rgba(0,153,238,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-inner { position: relative; z-index: 1; }
+
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(42px, 8vw, 80px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  h1 span {
+    display: block;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    margin-top: 18px;
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  /* ── Grid ── */
+  .grid-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px 72px;
+  }
+
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin-bottom: 24px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  /* ── Card ── */
+  .card {
+    display: block;
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px 24px;
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--card-accent, var(--accent)), transparent);
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+
+  .card:hover {
+    background: var(--card-hover);
+    border-color: var(--card-accent, var(--accent));
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  }
+
+  .card:hover::after { opacity: 1; }
+
+  .card-icon {
+    font-size: 28px;
+    line-height: 1;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .card-tournament {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--card-accent, var(--accent));
+    margin-bottom: 6px;
+  }
+
+  .card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .card-arrow {
+    position: absolute;
+    bottom: 22px; right: 22px;
+    font-size: 18px;
+    color: var(--border);
+    transition: color 0.18s ease, transform 0.18s ease;
+  }
+
+  .card:hover .card-arrow {
+    color: var(--card-accent, var(--accent));
+    transform: translate(2px, -2px);
+  }
+
+  /* Accent variants */
+  .accent-blue  { --card-accent: #0099ee; }
+  .accent-violet{ --card-accent: #7c3aed; }
+  .accent-gold  { --card-accent: #f5a623; }
+  .accent-teal  { --card-accent: #0ea5a0; }
+  .accent-rose  { --card-accent: #e24d8e; }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 480px) {
+    .hero { padding: 48px 16px 40px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">chrisj78 · Premier Padel 2026</p>
+    <h1>Draws &amp;<span>Dashboards</span></h1>
+    <p class="hero-sub">Interactive brackets, seedings, rankings and KPI tools for the 2026 Premier Padel season.</p>
+  </div>
+</header>
+
+<main class="grid-wrap">
+
+  <!-- Italy Major 2026 -->
+  <p class="section-label">Italy Major 2026 — BNL</p>
+  <div class="grid">
+
+    <a href="italy_major_2026_mens_draw.html" class="card accent-blue">
+      <span class="card-icon">🎾</span>
+      <p class="card-tournament">Italy Major 2026</p>
+      <h2 class="card-title">Men's Draw</h2>
+      <p class="card-desc">Full interactive bracket from R64 through to the final, with match results and court badges.</p>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a href="italy_major_2026_womens_draw.html" class="card accent-violet">
+      <span class="card-icon">🎾</span>
+      <p class="card-tournament">Italy Major 2026</p>
+      <h2 class="card-title">Women's Draw</h2>
+      <p class="card-desc">Full interactive bracket from R64 through to the final, with match results and court badges.</p>
+      <span class="card-arrow">↗</span>
+    </a>
+
+  </div>
+
+  <!-- Valencia P1 2026 -->
+  <p class="section-label">Valencia P1 2026</p>
+  <div class="grid">
+
+    <a href="valencia_p1_2026_mens_mens_draw.html" class="card accent-blue">
+      <span class="card-icon">🎾</span>
+      <p class="card-tournament">Valencia P1 2026</p>
+      <h2 class="card-title">Men's Draw</h2>
+      <p class="card-desc">Interactive bracket with round-by-round results, seedings, and order-of-play detail.</p>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a href="valencia_p1_mens_seedings.html" class="card accent-gold">
+      <span class="card-icon">📊</span>
+      <p class="card-tournament">Valencia P1 2026</p>
+      <h2 class="card-title">Men's KPI Seedings</h2>
+      <p class="card-desc">Per-seed KPI cards showing FIP Ranking, Race position, and tournament points across five metrics.</p>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a href="valencia_p1_mens_rankings_chart.html" class="card accent-teal">
+      <span class="card-icon">📈</span>
+      <p class="card-tournament">Valencia P1 2026</p>
+      <h2 class="card-title">Men's Rankings Chart</h2>
+      <p class="card-desc">Visual chart tracking ranking and race data for the top seeds at Valencia P1.</p>
+      <span class="card-arrow">↗</span>
+    </a>
+
+  </div>
+
+  <!-- Season-wide -->
+  <p class="section-label">2026 Season</p>
+  <div class="grid">
+
+    <a href="premier_padel_2026_race.html" class="card accent-rose">
+      <span class="card-icon">🏆</span>
+      <p class="card-tournament">Premier Padel 2026</p>
+      <h2 class="card-title">FIP Race Standings</h2>
+      <p class="card-desc">Live-updated race standings table covering all Premier Padel events in the 2026 season.</p>
+      <span class="card-arrow">↗</span>
+    </a>
+
+  </div>
+
+</main>
+
+<footer>
+  Premier Padel 2026 · Data tools by Chris J · Built with official draw &amp; OoP PDFs
+</footer>
+
+</body>
+</html>
