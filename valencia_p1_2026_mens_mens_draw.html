@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valencia P1 2026 — Men's Draw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: #0a1a0f;
+    color: #e8f5ec;
+    min-height: 100vh;
+    padding: 20px 20px 40px;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    display: flex; align-items: center;
+    margin-bottom: 20px; padding-bottom: 14px;
+    border-bottom: 1px solid #1e4a2a;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .topbar-left { flex: 1; min-width: 200px; }
+  .page-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 24px; font-weight: 700; color: #f5c842; letter-spacing: 0.04em;
+  }
+  .page-sub { font-size: 12px; color: #7aad8a; margin-top: 2px; }
+  .topbar-right { margin-left: auto; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  #zoom-val {
+    font-size: 11px; color: #7aad8a; min-width: 36px;
+    text-align: center; font-family: 'Barlow Condensed', sans-serif;
+  }
+  .tb-btn {
+    background: #0f2a18; border: 1px solid #1e4a2a; color: #c8e8d4;
+    border-radius: 6px; padding: 5px 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .tb-btn:hover { background: #163d20; border-color: #4a8c5c; color: #7de8a8; }
+
+  /* SEEDS */
+  .seeds-section {
+    overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.35s ease, margin-bottom 0.35s ease;
+    max-height: 300px; opacity: 1; margin-bottom: 20px;
+  }
+  .seeds-section.hidden { max-height: 0; opacity: 0; margin-bottom: 0; }
+  .section-label {
+    font-size: 11px; font-weight: 500; color: #7aad8a;
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
+  }
+  .seeds-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
+  .seed-card {
+    background: #0f2a18; border: 1px solid #1e4a2a;
+    border-radius: 7px; padding: 8px 6px; text-align: center;
+  }
+  .seed-rank { font-size: 10px; color: #4a8c5c; font-weight: 500; margin-bottom: 2px; }
+  .seed-name {
+    font-size: 10px; color: #c8e8d4; font-weight: 500;
+    line-height: 1.3; min-height: 26px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .seed-pts {
+    font-size: 12px; color: #e8f5ec; font-weight: 600;
+    margin-top: 4px; font-family: 'Barlow Condensed', sans-serif;
+  }
+  .seed-diff { font-size: 9.5px; margin-top: 3px; padding: 2px 4px; border-radius: 3px; font-weight: 500; }
+  .seed-diff.gap { color: #f5c842; background: rgba(245,200,66,0.12); }
+  .seed-diff.top { color: #4db87a; background: rgba(77,184,122,0.12); font-size: 9px; }
+
+  /* BRACKET */
+  .bracket-outer {
+    display: flex; align-items: stretch; gap: 0;
+    width: 100%; overflow-x: auto; padding-bottom: 8px;
+  }
+  .half { flex: 1; display: flex; min-width: 0; }
+  .half-right { flex-direction: row-reverse; }
+
+  .round-col {
+    display: flex; flex-direction: column;
+    flex: 1; min-width: 138px; max-width: 195px;
+  }
+  .round-col.hidden-round { display: none; }
+
+  .round-header {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px; font-weight: 600; color: #4a8c5c;
+    text-align: center; padding: 0 4px 7px;
+    letter-spacing: 0.07em; text-transform: uppercase;
+  }
+  .matches-col { display: flex; flex-direction: column; flex: 1; }
+  .match-slot {
+    flex: 1; display: flex; align-items: center;
+    padding: 4px 4px; min-height: 70px;
+  }
+
+  /* MATCH CARD */
+  .match-card {
+    background: #0f2a18; border: 1px solid #1e4a2a;
+    border-radius: 7px; overflow: hidden;
+    width: 100%; transition: border-color 0.2s;
+  }
+  .match-card:hover { border-color: #2a6a3a; }
+
+  .team-row {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 7px; font-size: 10.5px; line-height: 1.3;
+    min-height: 32px; cursor: pointer;
+    transition: background 0.15s; color: #c8e8d4; user-select: none;
+  }
+  .team-row:hover { background: rgba(255,255,255,0.04); }
+  .team-row + .team-row { border-top: 1px solid #1a3a22; }
+  .team-row.winner { background: #163d20; color: #7de8a8; font-weight: 500; }
+  .team-row.winner:hover { background: #1a4a26; }
+
+  .team-seed {
+    font-size: 8.5px; font-weight: 700; color: #4a8c5c;
+    min-width: 12px; text-align: right;
+    font-family: 'Barlow Condensed', sans-serif; flex-shrink: 0;
+  }
+  .team-row.winner .team-seed { color: #4db87a; }
+  .team-name { flex: 1; word-break: break-word; }
+  .team-check { font-size: 9px; color: #4db87a; margin-left: auto; flex-shrink: 0; }
+  .tbd { color: #2d5c3a; font-style: italic; font-size: 10px; }
+
+  /* COURT / TIME BADGE */
+  .match-meta {
+    display: flex; align-items: center; gap: 4px;
+    padding: 3px 7px 3px; border-bottom: 1px solid #1a3a22; background: #0c2214;
+  }
+  .court-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 8.5px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; padding: 1px 4px; border-radius: 3px; flex-shrink: 0;
+  }
+  .court-center { background: rgba(245,200,66,0.18); color: #f5c842; }
+  .court-court2 { background: rgba(77,138,184,0.18); color: #7ab8e8; }
+  .court-court3 { background: rgba(184,77,138,0.18); color: #e87ab8; }
+  .match-time {
+    font-size: 9.5px; color: #7aad8a;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 500; margin-left: auto;
+  }
+
+  /* FINAL */
+  .final-col {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-width: 148px; max-width: 175px;
+    padding: 0 7px; flex-shrink: 0;
+  }
+  .final-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px; font-weight: 600; color: #4a8c5c;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 6px; text-align: center;
+  }
+  .final-card {
+    background: #0f2a18; border: 1px solid #2a6a3a;
+    border-radius: 8px; width: 100%; overflow: hidden;
+  }
+  .final-team {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 9px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 12px;
+    color: #7de8a8; font-weight: 500; min-height: 34px;
+    cursor: pointer; transition: background 0.15s; user-select: none;
+  }
+  .final-team:hover { background: rgba(255,255,255,0.04); }
+  .final-team + .final-team { border-top: 1px solid #1e4a2a; }
+  .champion-box {
+    background: linear-gradient(145deg, #1a3a10 0%, #0f2a18 100%);
+    border: 1.5px solid #C9971A; border-radius: 10px;
+    padding: 14px 12px; text-align: center; width: 100%;
+  }
+  .champion-label { font-size: 9px; color: #9a7a3c; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 5px; }
+  .champion-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px; font-weight: 700; color: #f5c842; line-height: 1.3;
+  }
+  .trophy { font-size: 22px; display: block; margin-bottom: 5px; }
+  .instructions { margin-top: 16px; font-size: 11px; color: #4a8c5c; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="page-title">Valencia P1 2026</div>
+    <div class="page-sub">Men's Draw &nbsp;·&nbsp; Valencia, ESP &nbsp;·&nbsp; 6–14 Jun 2026 &nbsp;·&nbsp; €479,068</div>
+  </div>
+  <div class="topbar-right">
+<button class="tb-btn" onclick="zoomBracket(-0.1)">−</button>
+    <span id="zoom-val">100%</span>
+    <button class="tb-btn" onclick="zoomBracket(0.1)">+</button>
+    <button class="tb-btn" onclick="resetAll()">↺ Reset</button>
+    <button class="tb-btn" id="seeds-toggle-btn" onclick="toggleSeeds()">▲ Seeds</button>
+  </div>
+</div>
+
+<div class="seeds-section" id="seeds-panel">
+  <div class="section-label">Seeded teams — points &amp; gap to rank above</div>
+  <div class="seeds-grid" id="seeds-grid"></div>
+</div>
+
+<div class="section-label">Interactive bracket — click a team to advance them</div>
+<div class="bracket-outer" id="bracket"></div>
+<div class="instructions">Click any team to advance · Click again to undo · R64/R32 results are locked</div>
+
+<script>
+// ── DRAW DATA ──────────────────────────────────────────────────
+// R16 onward only. R64/R32 results are historical.
+// round 0=R16(8), 1=QF(4), 2=SF(2), 3=F(1)
+
+const R16 = [
+  // TOP HALF
+  { t1:{name:'Coello / Tapia',         seed:1},   t2:{name:'Esbri / Ruiz Granados',  seed:10},  court:'center', time:'Not before 5:30 PM' },
+  { t1:{name:'Jofre / Bautista',       seed:15},  t2:{name:'Nieto Ruiz / Sanz',      seed:5},   court:'court2', time:'Not before 4:00 PM' },
+  { t1:{name:'Navarro / Di Nenno',     seed:6},   t2:{name:'Sintes / Santigosa',     seed:null}, court:'court2', time:'Not before 5:30 PM' },
+  { t1:{name:'García / Jiménez',       seed:13},  t2:{name:'Yanguas / Stupaczuk',    seed:3},   court:'center', time:'Not before 7:30 PM' },
+  // BOTTOM HALF
+  { t1:{name:'Lebrón / Augsburger',    seed:4},   t2:{name:'Diestro / Piotto',       seed:null}, court:'center', time:'Not before 2:30 PM' },
+  { t1:{name:'Mouriño / Quílez',       seed:null}, t2:{name:'Leal / Guerrero',       seed:7},   court:'court3', time:'Not before 11:30 AM' },
+  { t1:{name:'Bergamini / Garrido',    seed:8},   t2:{name:'Tello / Arce Simó',      seed:14},  court:'court3', time:'Not before 1:00 PM' },
+  { t1:{name:'Chozas / Libaak',        seed:null}, t2:{name:'Galán / Chingotto',     seed:2},   court:'center', time:'Not before 4:00 PM' },
+];
+
+const QF_SCHEDULE = {
+  0: { court:'center', time:'Not before 4:30 PM' },
+  1: { court:'center', time:'Not before 7:30 PM' },
+  2: { court:'center', time:'Not before 11:30 AM' },
+  3: { court:'center', time:'Not before 3:00 PM' },
+};
+
+const SF_SCHEDULE = {
+  0: { court:'center', time:'Not before 6:30 PM' },
+  1: { court:'center', time:'Not before 2:00 PM' },
+};
+
+const FINAL_SCHEDULE = { court:'center', time:'Not before 4:00 PM' };
+const COURT_NAMES   = { center:'Center Court', court2:'Court 2', court3:'Court 3' };
+const COURT_CLASSES = { center:'court-center', court2:'court-court2', court3:'court-court3' };
+
+// ── STATE ──────────────────────────────────────────────────────
+const state = {
+  r16: ['t1','t2','t1','t2','t1','t2','t2','t2'],  // all locked from draw
+  qf:  ['t1','t2','t1','t2'],                        // all locked from QF OoP
+  sf: [
+    't1', // SF0 (left):  Coello/Tapia [1]      beat Yanguas/Stupaczuk [3]
+    't2', // SF1 (right): Galán/Chingotto [2]   beat Lebrón/Augsburger [4]
+  ],
+  f:   [null],
+};
+
+function getStateArr(round) {
+  return [state.r16, state.qf, state.sf, state.f][round];
+}
+
+const LOCKED = new Set([0, 1]); // R16 and QF locked
+
+function getWinner(round, idx) {
+  const arr = getStateArr(round);
+  const w = arr[idx];
+  if (!w) return null;
+  if (round === 0) { const m = R16[idx]; return w === 't1' ? m.t1 : m.t2; }
+  const p1 = getWinner(round - 1, idx * 2);
+  const p2 = getWinner(round - 1, idx * 2 + 1);
+  return w === 't1' ? p1 : p2;
+}
+
+function getTeams(round, idx) {
+  if (round === 0) return { t1: R16[idx].t1, t2: R16[idx].t2 };
+  return { t1: getWinner(round - 1, idx * 2), t2: getWinner(round - 1, idx * 2 + 1) };
+}
+
+function clearDownstream(round, idx) {
+  if (round >= 3) return;
+  const nr = round + 1, nm = Math.floor(idx / 2);
+  const na = getStateArr(nr);
+  if (na[nm] !== null) { na[nm] = null; clearDownstream(nr, nm); }
+}
+
+function setWinner(round, idx, side) {
+  if (LOCKED.has(round)) return;
+  const arr = getStateArr(round);
+  if (arr[idx] === side) { arr[idx] = null; clearDownstream(round, idx); }
+  else { arr[idx] = side; clearDownstream(round, idx); }
+  render();
+}
+
+// ── BUILD CARD ──────────────────────────────────────────────────
+function buildCard(round, idx) {
+  const { t1, t2 } = getTeams(round, idx);
+  const arr = getStateArr(round);
+  const winner = arr ? arr[idx] : null;
+  const locked = LOCKED.has(round);
+  const card = document.createElement('div');
+  card.className = 'match-card';
+
+  let sched = null;
+  if (round === 0) sched = R16[idx] || null;
+  else if (round === 1) sched = QF_SCHEDULE[idx] || null;
+  else if (round === 2) sched = SF_SCHEDULE[idx] || null;
+  else if (round === 3) sched = FINAL_SCHEDULE;
+
+  if (sched && sched.court) {
+    const meta = document.createElement('div'); meta.className = 'match-meta';
+    const badge = document.createElement('span');
+    badge.className = 'court-badge ' + (COURT_CLASSES[sched.court] || '');
+    badge.textContent = COURT_NAMES[sched.court] || sched.court;
+    const timeEl = document.createElement('span'); timeEl.className = 'match-time'; timeEl.textContent = sched.time;
+    meta.appendChild(badge); meta.appendChild(timeEl); card.appendChild(meta);
+  }
+
+  function makeRow(team, side) {
+    const row = document.createElement('div');
+    const isW = winner === side;
+    row.className = 'team-row' + (isW ? ' winner' : '');
+    if (locked) row.style.cursor = 'default';
+    if (team) {
+      const s = document.createElement('span'); s.className = 'team-seed'; s.textContent = team.seed || '';
+      const n = document.createElement('span'); n.className = 'team-name'; n.textContent = team.name;
+      row.appendChild(s); row.appendChild(n);
+      if (isW) { const ck = document.createElement('span'); ck.className = 'team-check'; ck.textContent = '✓'; row.appendChild(ck); }
+      if (!locked) row.addEventListener('click', () => setWinner(round, idx, side));
+    } else {
+      const sp = document.createElement('span'); sp.className = 'tbd'; sp.textContent = 'TBD'; row.appendChild(sp);
+    }
+    return row;
+  }
+
+  const dv = document.createElement('div'); dv.style.cssText = 'height:1px;background:#1a3a22;';
+  card.appendChild(makeRow(t1, 't1')); card.appendChild(dv); card.appendChild(makeRow(t2, 't2'));
+  return card;
+}
+
+// ── BUILD ROUND COL ─────────────────────────────────────────────
+function buildRoundCol(label, indices, round, key) {
+  const col = document.createElement('div'); col.className = 'round-col'; col.dataset.round = key;
+  const hdr = document.createElement('div'); hdr.className = 'round-header'; hdr.textContent = label;
+  col.appendChild(hdr);
+  const wrap = document.createElement('div'); wrap.className = 'matches-col';
+  indices.forEach(i => {
+    const slot = document.createElement('div'); slot.className = 'match-slot';
+    slot.appendChild(buildCard(round, i)); wrap.appendChild(slot);
+  });
+  col.appendChild(wrap); return col;
+}
+
+// ── RENDER ──────────────────────────────────────────────────────
+function render() {
+  const bracket = document.getElementById('bracket');
+  bracket.innerHTML = '';
+
+  const left = document.createElement('div'); left.className = 'half half-left';
+  left.appendChild(buildRoundCol('Round of 16',   [0,1,2,3], 0, 'r16'));
+  left.appendChild(buildRoundCol('Quarterfinals', [0,1],     1, 'qf'));
+  left.appendChild(buildRoundCol('Semifinals',    [0],       2, 'sf'));
+  bracket.appendChild(left);
+
+  const finalCol = document.createElement('div');
+  finalCol.className = 'final-col'; finalCol.dataset.round = 'final';
+  const fl = document.createElement('div'); fl.className = 'final-label'; fl.textContent = 'Final';
+  finalCol.appendChild(fl);
+
+  const champ = state.f[0] !== null ? getWinner(3, 0) : null;
+  if (champ) {
+    const cb = document.createElement('div'); cb.className = 'champion-box';
+    cb.innerHTML = '<span class="trophy">🏆</span><div class="champion-label">Champion</div><div class="champion-name">' + champ.name + '</div>';
+    finalCol.appendChild(cb);
+  } else {
+    const fc = document.createElement('div'); fc.className = 'final-card';
+    if (FINAL_SCHEDULE) {
+      const fm = document.createElement('div'); fm.className = 'match-meta';
+      const fb = document.createElement('span'); fb.className = 'court-badge ' + (COURT_CLASSES[FINAL_SCHEDULE.court] || ''); fb.textContent = COURT_NAMES[FINAL_SCHEDULE.court] || FINAL_SCHEDULE.court;
+      const ft = document.createElement('span'); ft.className = 'match-time'; ft.textContent = FINAL_SCHEDULE.time;
+      fm.appendChild(fb); fm.appendChild(ft); fc.appendChild(fm);
+    }
+    [getWinner(2, 0), getWinner(2, 1)].forEach((team, i) => {
+      const row = document.createElement('div'); row.className = 'final-team';
+      if (team) { row.textContent = team.name; row.addEventListener('click', () => { state.f[0] = i === 0 ? 't1' : 't2'; render(); }); }
+      else { const sp = document.createElement('span'); sp.className = 'tbd'; sp.textContent = 'TBD'; row.appendChild(sp); }
+      if (i === 0) { fc.appendChild(row); const d = document.createElement('div'); d.style.cssText = 'height:1px;background:#1e4a2a;'; fc.appendChild(d); }
+      else fc.appendChild(row);
+    });
+    finalCol.appendChild(fc);
+  }
+  bracket.appendChild(finalCol);
+
+  const right = document.createElement('div'); right.className = 'half half-right';
+  right.appendChild(buildRoundCol('Round of 16',   [4,5,6,7], 0, 'r16'));
+  right.appendChild(buildRoundCol('Quarterfinals', [2,3],     1, 'qf'));
+  right.appendChild(buildRoundCol('Semifinals',    [1],       2, 'sf'));
+  bracket.appendChild(right);
+}
+
+
+// ── SEEDS ──────────────────────────────────────────────────────
+const SEEDS = [
+  { rank:1,  team:'Coello / Tapia',        pts:40794 },
+  { rank:2,  team:'Galán / Chingotto',      pts:36268 },
+  { rank:3,  team:'Yanguas / Stupaczuk',    pts:14199 },
+  { rank:4,  team:'Lebrón / Augsburger',    pts:13604 },
+  { rank:5,  team:'Nieto Ruiz / Sanz',      pts:10923 },
+  { rank:6,  team:'Navarro / Di Nenno',     pts:10608 },
+  { rank:7,  team:'Leal / Guerrero',        pts:8826  },
+  { rank:8,  team:'Bergamini / Garrido',    pts:6678  },
+  { rank:9,  team:'González / Campagnolo',  pts:6566  },
+  { rank:10, team:'Esbri / Ruiz Granados',  pts:4872  },
+  { rank:11, team:'Alonso / Goñi Lacabe',   pts:4807  },
+  { rank:12, team:'Aguirre / Arroyo',       pts:4548  },
+  { rank:13, team:'García / Jiménez',       pts:4508  },
+  { rank:14, team:'Tello / Arce Simó',      pts:4418  },
+  { rank:15, team:'Jofre / Bautista',       pts:4285  },
+  { rank:16, team:'Barahona / Alfonso',     pts:4285  },
+];
+
+// ── SEEDS ───────────────────────────────────────────────────────
+function renderSeeds() {
+  const grid = document.getElementById('seeds-grid');
+  SEEDS.forEach((s,i) => {
+    const above = i > 0 ? SEEDS[i-1] : null;
+    const diff = above ? above.pts - s.pts : null;
+    const card = document.createElement('div'); card.className = 'seed-card';
+    card.innerHTML = `<div class="seed-rank">#${s.rank}</div>
+      <div class="seed-name">${s.team.replace(' / ','<br>')}</div>
+      <div class="seed-pts">${s.pts.toLocaleString()}</div>
+      ${diff!==null ? `<div class="seed-diff gap">+${diff.toLocaleString()} to #${s.rank-1}</div>`
+                    : `<div class="seed-diff top">Top seed</div>`}`;
+    grid.appendChild(card);
+  });
+}
+
+// ── TOOLBAR ─────────────────────────────────────────────────────
+let zoomLevel = 1.0;
+function zoomBracket(delta) {
+  zoomLevel = Math.max(0.4, Math.min(1.8, zoomLevel + delta));
+  const bo = document.getElementById('bracket');
+  bo.style.zoom = zoomLevel;
+  document.body.style.width = Math.round(100 / zoomLevel) + '%';
+  document.getElementById('zoom-val').textContent = Math.round(zoomLevel * 100) + '%';
+}
+
+let seedsVisible = true;
+function toggleSeeds() {
+  seedsVisible = !seedsVisible;
+  document.getElementById('seeds-panel').classList.toggle('hidden', !seedsVisible);
+  document.getElementById('seeds-toggle-btn').textContent = seedsVisible ? '▲ Seeds' : '▼ Seeds';
+}
+
+function resetAll() {
+  state.sf = [null, null];
+  state.f  = [null];
+  render();
+}
+
+// ── INIT ────────────────────────────────────────────────────────
+renderSeeds();
+render();
+</script>
+</body>
+</html>
